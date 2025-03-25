@@ -54,8 +54,7 @@ jobs:
         run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: Setup TailwindCSS
         run: |
-          npm install -D tailwindcss@latest
-          npx tailwindcss init
+          npm install tailwindcss @tailwindcss/cli
       - name: Cache Restore
         id: cache-restore
         uses: actions/cache/restore@v4
