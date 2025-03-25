@@ -32,6 +32,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Install TailwindCSS
+        run: |
+          npm install -D tailwindcss @tailwindcss/cli
+          npm install -D @tailwindcss/typography
+          npm install -D @tailwindcss/forms
+          npm install -D @tailwindcss/aspect-ratio
+          npm install -D @tailwindcss/container-queries
+
       - name: Install Hugo
         run: |
           curl -LO "https://github.com/gohugoio/hugo/releases/download/v${{ env.HUGO_VERSION }}/hugo_extended_${{ env.HUGO_VERSION }}_Linux-64bit.tar.gz"
