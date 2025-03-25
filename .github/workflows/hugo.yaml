@@ -4,11 +4,7 @@ name: Deploy Hugo site to Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches:
-      - main
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    branches: ["main"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -16,41 +12,55 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
-# Default to bash
-defaults:
-  run:
-    shell: bash
+# Environment variables available to all jobs and steps in this workflow
+env:
+  HUGO_ENV: production
+  HUGO_VERSION: "0.121.2"
+  GO_VERSION: "1.20.5"
+  NODE_VERSION: "20.0.0"
+  TINA_CLIENT_ID: ${{ vars.TINA_CLIENT_ID }}
+  TINA_TOKEN: ${{ vars.TINA_TOKEN }}
 
 jobs:
-  deploy:
-    runs-on: ubuntu-20.04
+  # Build job
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          submodules: true
-          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
-      - name: Setup TailwindCSS
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Hugo
         run: |
-          npm install tailwindcss @tailwindcss/cli
-          npm install -D @tailwindcss/typography
-          npm install -D @tailwindcss/forms
-          npm install -D @tailwindcss/aspect-ratio
-          npm install -D @tailwindcss/container-queries
+          curl -LO "https://github.com/gohugoio/hugo/releases/download/v${{ env.HUGO_VERSION }}/hugo_extended_${{ env.HUGO_VERSION }}_Linux-64bit.tar.gz"
+          tar -xvf hugo_extended_${{ env.HUGO_VERSION }}_Linux-64bit.tar.gz
+          sudo mv hugo /usr/local/bin/
+          rm hugo_extended_${{ env.HUGO_VERSION }}_Linux-64bit.tar.gz
+          hugo version
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+      - name: Install Go
+        run: |
+          curl -LO "https://dl.google.com/go/go${{ env.GO_VERSION }}.linux-amd64.tar.gz"
+          sudo tar -C /usr/local -xzf go${{ env.GO_VERSION }}.linux-amd64.tar.gz
+          echo "export PATH=$PATH:/usr/local/go/bin" >> $GITHUB_ENV
+          rm go${{ env.GO_VERSION }}.linux-amd64.tar.gz
+          go version
+
+      - name: Setup Project
+        run: npm run project-setup
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Publish to GitHub Pages
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          hugo-version: "latest"
-
-      - name: Build
-        run: hugo --minify
-
+          path: ./public
   # Deployment job
   deploy:
     environment:
