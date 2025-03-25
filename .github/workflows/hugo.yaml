@@ -55,6 +55,8 @@ jobs:
       - name: Setup TailwindCSS
         run: |
           npm install tailwindcss @tailwindcss/cli
+      - name: Install Tailwind CLI
+        run: npm install -D @tailwindcss/forms
       - name: Install npm dependencies
         run: npm install
       - name: Cache Restore
