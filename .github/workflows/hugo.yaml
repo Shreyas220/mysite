@@ -55,6 +55,7 @@ jobs:
       - name: Setup TailwindCSS
         run: |
           npm install tailwindcss @tailwindcss/cli
+          npx tailwindcss init
       - name: Cache Restore
         id: cache-restore
         uses: actions/cache/restore@v4
