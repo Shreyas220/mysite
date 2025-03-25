@@ -52,12 +52,10 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Install Node.js dependencies
         run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
-      - name: Install TailwindCSS CLI
-        run: npm install -g tailwindcss
-      - name: Add npm global bin to PATH
-        run: echo "$(npm bin -g)" >> $GITHUB_PATH
-      - name: Install TailwindCSS CLI
-        run: npx tailwindcss init
+      - name: Setup TailwindCSS
+        run: |
+          npm install -D tailwindcss@latest
+          npx tailwindcss init
       - name: Cache Restore
         id: cache-restore
         uses: actions/cache/restore@v4
@@ -69,7 +67,6 @@ jobs:
             hugo-
       - name: Build with Hugo
         run: |
-          echo "$(npm bin -g)" >> $GITHUB_PATH
           hugo \
             --gc \
             --minify \
