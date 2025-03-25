@@ -1,0 +1,20 @@
+[build.environment]
+HUGO_VERSION = "0.145.0"
+DART_SASS_VERSION = "1.85.0"
+NODE_VERSION = "22"
+TZ = "America/Los_Angeles"
+
+[build]
+publish = "public"
+command = """\
+  curl -LJO https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz && \
+  npm install tailwindcss@^3.3.0 @tailwindcss/cli && \
+  npm install -D @tailwindcss/typography && \
+  npm install -D @tailwindcss/forms && \
+  npm install -D @tailwindcss/aspect-ratio && \
+  npm install -D @tailwindcss/container-queries && \
+  tar -xf dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz && \
+  rm dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz && \
+  export PATH=/opt/build/repo/dart-sass:$PATH && \
+  hugo --gc --minify \
+  """
