@@ -1,19 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Protocol on Hugoplate</title>
-    <link>http://localhost:1313/tags/protocol/</link>
-    <description>Recent content in Protocol on Hugoplate</description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <lastBuildDate>Mon, 10 Mar 2025 05:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/protocol/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Gossip Protocol</title>
-      <link>http://localhost:1313/blog/gossip/</link>
-      <pubDate>Mon, 10 Mar 2025 05:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/blog/gossip/</guid>
-      <description>&lt;h2 id=&#34;gossip&#34;&gt;Gossip&lt;/h2&gt;&#xA;&lt;p&gt;Introduction to gossip protocol&lt;/p&gt;&#xA;&lt;h2 id=&#34;why-do-we-need-gossip-protocol-&#34;&gt;Why do we need gossip protocol ?&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;strong&gt;Centralized Coordination Overhead&lt;/strong&gt;&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Protocol on Hugoplate</title><link>https://example.org/tags/protocol/</link><description>Recent content in Protocol on Hugoplate</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Mon, 10 Mar 2025 05:00:00 +0000</lastBuildDate><atom:link href="https://example.org/tags/protocol/index.xml" rel="self" type="application/rss+xml"/><item><title>Gossip Protocol</title><link>https://example.org/blog/gossip/</link><pubDate>Mon, 10 Mar 2025 05:00:00 +0000</pubDate><guid>https://example.org/blog/gossip/</guid><description>&lt;h2 id="gossip">Gossip&lt;/h2>
+&lt;p>Introduction to gossip protocol&lt;/p>
+&lt;h2 id="why-do-we-need-gossip-protocol-">Why do we need gossip protocol ?&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>Centralized Coordination Overhead&lt;/strong>&lt;/p></description></item></channel></rss>
