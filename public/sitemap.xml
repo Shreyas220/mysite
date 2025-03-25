@@ -2,41 +2,41 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://example.org/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/blog/</loc>
+    <loc>https://example.org/blog/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://example.org/categories/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/distributed-systems/</loc>
+    <loc>https://example.org/categories/distributed-systems/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/fault-tolerance/</loc>
+    <loc>https://example.org/tags/fault-tolerance/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/blog/millwheel/</loc>
+    <loc>https://example.org/blog/millwheel/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/blog/gossip/</loc>
+    <loc>https://example.org/blog/gossip/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/protocol/</loc>
+    <loc>https://example.org/tags/protocol/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/research-paper/</loc>
+    <loc>https://example.org/tags/research-paper/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/streaming-systems/</loc>
+    <loc>https://example.org/categories/streaming-systems/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://example.org/tags/</loc>
     <lastmod>2025-03-10T05:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/about/</loc>
+    <loc>https://example.org/about/</loc>
   </url><url>
-    <loc>http://localhost:1313/pages/</loc>
+    <loc>https://example.org/pages/</loc>
   </url>
 </urlset>
