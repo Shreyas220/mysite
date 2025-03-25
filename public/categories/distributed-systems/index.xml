@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Distributed Systems on Hugoplate</title>
+    <link>http://localhost:1313/categories/distributed-systems/</link>
+    <description>Recent content in Distributed Systems on Hugoplate</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 10 Mar 2025 05:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/distributed-systems/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fault tolerance in MillWheels</title>
+      <link>http://localhost:1313/blog/millwheel/</link>
+      <pubDate>Mon, 10 Mar 2025 05:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blog/millwheel/</guid>
+      <description>&lt;p&gt;🚧 Under Construction 🚧&lt;/p&gt;&#xA;&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;Streaming systems operate under challenging conditions where data flows continuously, errors can occur at any stage, and any downtime may lead to lost or inconsistent information. This makes fault tolerance not just a feature but a necessity for ensuring that systems quickly recover from failures while maintaining state consistency and processing guarantee&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Gossip Protocol</title>
+      <link>http://localhost:1313/blog/gossip/</link>
+      <pubDate>Mon, 10 Mar 2025 05:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blog/gossip/</guid>
+      <description>&lt;h2 id=&#34;why-do-we-need-gossip-protocol-&#34;&gt;Why do we need gossip protocol ?&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&lt;strong&gt;Centralized Coordination Overhead&lt;/strong&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;centralized coordinators creates bottlenecks and single points of failure. Leader failures paralyze the system until a new leader is elected&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Inefficient Failure Detection&lt;/strong&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Heartbeat-based monitoring requires constant communication, consuming excessive bandwidth and overload the network but slow detection of node failures leads to stale data and service disruptions&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Unreliable Multicast Communication&lt;/strong&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Multicast protocols struggle with packet loss, network splits, and scalability in large clusters. A multicast message to 1,000 nodes could overload the network and fail to reach all nodes&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Slow State Synchronization&lt;/strong&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Manual or slow periodic reconciliation of node states can cause delays and inconsistencies when nodes operate with outdated data, risking decision-making errors (e.g., duplicate transactions)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h1 id=&#34;how-gossip-protocol-works&#34;&gt;how gossip protocol works&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Nodes communicate with randomly selected peers.&lt;/li&gt;&#xA;&lt;li&gt;Each node operates with limited local knowledge of the system.&lt;/li&gt;&#xA;&lt;li&gt;Communication occurs at regular intervals.&lt;/li&gt;&#xA;&lt;li&gt;The size of transmitted data is limited per gossip round.&lt;/li&gt;&#xA;&lt;li&gt;The protocol assumes network paths may fail.&lt;/li&gt;&#xA;&lt;li&gt;Interactions are infrequent to reduce overhead.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;types-of-gossip-protocol&#34;&gt;Types of gossip protocol&lt;/h1&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Anti Entropy&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Nodes periodically compare their entire dataset with other nodes to identify and rectify inconsistencies&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Rumor Mongering&#xA;&lt;ol&gt;&#xA;&lt;li&gt;sharing only the latest updates&lt;/li&gt;&#xA;&lt;li&gt; might flood the network with frequent cycles&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Aggregation Gossip Protocol&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Dissemination Protocol Variants&lt;/strong&gt;:&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&lt;strong&gt;Event Dissemination Protocols&lt;/strong&gt;: Gossip periodically about events without triggering gossip directly.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Background Data Dissemination Protocols&lt;/strong&gt;: Continuously gossip about node-associated information, suitable for environments where propagation latency isn&amp;rsquo;t critical&lt;a href=&#34;https://en.wikipedia.org/wiki/Gossip_protocol&#34;&#xA;&#xA;&#xA;&#xA;&#xA; target=&#34;_blank&#34;&#xA; &#xA;&#xA;&#xA;&gt;2&lt;/a&gt;.&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;&lt;strong&gt;epidemic based protocol&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

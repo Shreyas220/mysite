@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Research Paper on Hugoplate</title>
+    <link>http://localhost:1313/tags/research-paper/</link>
+    <description>Recent content in Research Paper on Hugoplate</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 10 Mar 2025 05:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/research-paper/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fault tolerance in MillWheels</title>
+      <link>http://localhost:1313/blog/millwheel/</link>
+      <pubDate>Mon, 10 Mar 2025 05:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blog/millwheel/</guid>
+      <description>&lt;p&gt;🚧 Under Construction 🚧&lt;/p&gt;&#xA;&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;Streaming systems operate under challenging conditions where data flows continuously, errors can occur at any stage, and any downtime may lead to lost or inconsistent information. This makes fault tolerance not just a feature but a necessity for ensuring that systems quickly recover from failures while maintaining state consistency and processing guarantee&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
