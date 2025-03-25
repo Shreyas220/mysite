@@ -17,8 +17,3 @@ url = "/blog"
 weight = 3
 
 
-# footer menu
-[[footer]]
-name = "About"
-url = "/about"
-weight = 1

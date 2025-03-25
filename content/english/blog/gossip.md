@@ -3,7 +3,7 @@ title: "Gossip Protocol"
 meta_title: ""
 description: "Understanding Gossip protocol "
 date: 2025-03-10T05:00:00Z
-image: "/images/gossip.jpg"
+image: "/images/image.jpg"
 categories: ["Distributed Systems"]
 author: "Shreyas Mishra"
 tags: ["protocol"]
