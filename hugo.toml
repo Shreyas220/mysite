@@ -160,3 +160,7 @@ lazy = true
 [[params.plugins.js]]
 link = "plugins/youtube-lite.js"
 lazy = true
+
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'

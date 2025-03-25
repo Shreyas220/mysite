@@ -3,7 +3,7 @@ title: "Gossip Protocol"
 meta_title: ""
 description: "Understanding Gossip protocol "
 date: 2025-03-10T05:00:00Z
-image: "/images/millwheel.jpg"
+image: "/images/gossip.jpg"
 categories: ["Distributed Systems"]
 author: "Shreyas Mishra"
 tags: ["protocol"]
@@ -12,7 +12,7 @@ draft: false
 
 ## Gossip
 
-Introduction to gossup protocol
+Introduction to gossip protocol
 
 ## Why do we need gossip protocol ?
 
