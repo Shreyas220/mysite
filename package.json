@@ -11,11 +11,11 @@
       "dev:example": "cd exampleSite && hugo server",
       "build:example": "cd exampleSite && hugo --gc --minify --templateMetrics --templateMetricsHints --forceSyncStatic",
       "preview:example": "cd exampleSite && hugo server --disableFastRender --navigateToChanged --templateMetrics --templateMetricsHints --watch --forceSyncStatic -e production --minify",
-      "update-modules": "node ./scripts/clearModules.js && hugo mod clean --all && hugo mod get -u ./... && hugo mod tidy",
-      "remove-darkmode": "node ./scripts/removeDarkmode.js && yarn format",
-      "project-setup": "node ./scripts/projectSetup.js",
-      "theme-setup": "node ./scripts/themeSetup.js",
-      "update-theme": "node ./scripts/themeUpdate.js",
+      "update-modules": "node ./theme/scripts/clearModules.js && hugo mod clean --all && hugo mod get -u ./... && hugo mod tidy",
+      "remove-darkmode": "node ./theme/scripts/removeDarkmode.js && yarn format",
+      "project-setup": "node ./theme/scripts/projectSetup.js",
+      "theme-setup": "node ./theme/scripts/themeSetup.js",
+      "update-theme": "node ./theme/scripts/themeUpdate.js",
       "format": "prettier -w ."
     },
     "devDependencies": {

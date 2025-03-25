@@ -18,8 +18,6 @@ defaultContentLanguage = 'en'
 # defaultContentLanguageInSubdir need to be true if you want to use the language code as a subdirectory and language specific 404 page
 defaultContentLanguageInSubdir = false
 
-
-
 ########################### Services #############################
 [services]
 [services.googleAnalytics]
@@ -72,8 +70,8 @@ resampleFilter = "Lanczos"
 
 ############################ Caches ##############################
 [caches]
-[caches.images]
-dir = ':cacheDir/images'
+  [caches.images]
+    dir = ':cacheDir/images'
 
 [caches.assets]
 dir = ":resourceDir/_gen"
@@ -161,4 +159,3 @@ lazy = true
 [[params.plugins.js]]
 link = "plugins/youtube-lite.js"
 lazy = true
-
