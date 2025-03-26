@@ -1,0 +1,1881 @@
+<!doctype html>
+<html
+  itemscope
+  class=""
+  lang="en-us"
+  itemtype="http://schema.org/WebPage">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+    <meta charset="utf-8" />
+
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=5" />
+
+
+<meta name="theme-name" content="hugoplate" />
+
+
+
+
+
+
+
+
+
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta
+  name="msapplication-TileColor"
+  content="#ddd" />
+<meta
+  name="theme-color"
+  content="#ffffff" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <base href="//localhost:1313/blog/async/" />
+
+
+
+
+
+
+
+  
+
+
+<title>Async</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <meta
+    name="keywords"
+    content="Boilerplate, Hugo" />
+
+
+
+
+<meta
+  name="description"
+  content="Understanding Fault Tolerance in Streaming Systems " />
+
+
+
+  <meta name="author" content="zeon.studio" />
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+
+
+  
+  
+    
+    
+      
+    
+
+    
+
+
+    
+    
+
+
+    
+    
+      
+      
+      
+        <meta property="og:image" content="//localhost:1313/images/tokio.png" />
+        <meta name="twitter:image" content="//localhost:1313/images/tokio.png" />
+        <meta
+          name="twitter:card"
+          content="summary_large_image" />
+      
+      
+      <meta property="og:image:width" content="1536" />
+      <meta property="og:image:height" content="1024" />
+    
+
+
+    
+    <meta
+      property="og:image:type"
+      content="image/.png" />
+  
+
+
+  
+
+
+
+
+
+<meta property="og:title" content="Async" />
+<meta property="og:description" content="Understanding Fault Tolerance in Streaming Systems " />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="//localhost:1313/blog/async/" />
+
+
+<meta name="twitter:title" content="Async" />
+<meta name="twitter:description" content="Understanding Fault Tolerance in Streaming Systems " />
+
+
+  <meta name="twitter:site" content="@zeon_studio" />
+
+
+  <meta name="twitter:creator" content="@zeon.studio" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  let indexURL = "//localhost:1313/searchindex.json";
+  let includeSectionsInSearch = ["blog"];
+  let search_no_results = "No results for";
+  let search_initial_message = "Type something to search..";
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+<meta http-equiv="x-dns-prefetch-control" content="on" />
+<link rel="preconnect" href="https://use.fontawesome.com" crossorigin />
+<link rel="preconnect" href="//cdnjs.cloudflare.com" />
+<link rel="preconnect" href="//www.googletagmanager.com" />
+<link rel="preconnect" href="//www.google-analytics.com" />
+<link rel="dns-prefetch" href="https://use.fontawesome.com" />
+<link rel="dns-prefetch" href="//ajax.googleapis.com" />
+<link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+<link rel="dns-prefetch" href="//www.googletagmanager.com" />
+<link rel="dns-prefetch" href="//www.google-analytics.com" />
+<link rel="dns-prefetch" href="//fonts.googleapis.com" />
+<link rel="dns-prefetch" href="//connect.facebook.net" />
+<link rel="dns-prefetch" href="//platform.linkedin.com" />
+<link rel="dns-prefetch" href="//platform.twitter.com" />
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<script>
+  (function () {
+    const googleFont = document.createElement("link");
+    googleFont.href = "https://fonts.googleapis.com/css2?family=Heebo:wght@400;600&family=Signika:wght@500;700&display=swap";
+    googleFont.type = "text/css";
+    googleFont.rel = "stylesheet";
+    document.head.appendChild(googleFont);
+  })();
+</script>
+
+
+
+
+
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link
+  href="/css/style.css"
+  integrity=""
+  rel="stylesheet" />
+
+
+<link
+  defer
+  async
+  rel="stylesheet"
+  href="/css/style-lazy.css"
+  integrity=""
+  media="print"
+  onload="this.media='all'; this.onload=null;" />
+
+
+  </head>
+
+  <body>
+    
+    
+      
+
+
+
+
+
+      
+      <div
+  class="fixed left-0 top-0 z-50 flex w-[30px] items-center justify-center bg-gray-200 py-[2.5px] text-[12px] uppercase text-black sm:bg-red-200 md:bg-yellow-200 lg:bg-green-200 xl:bg-blue-200 2xl:bg-pink-200">
+  <span class="block sm:hidden">all</span>
+  <span class="hidden sm:block md:hidden">sm</span>
+  <span class="hidden md:block lg:hidden">md</span>
+  <span class="hidden lg:block xl:hidden">lg</span>
+  <span class="hidden xl:block 2xl:hidden">xl</span>
+  <span class="hidden 2xl:block">2xl</span>
+</div>
+
+    
+
+
+    
+    
+
+
+
+
+
+    
+    <header
+  class="header  z-30">
+  <nav class="navbar container">
+    
+    <div class="order-0">
+      
+      <a class="navbar-brand block" href="/">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  Shreyas Mishra
+
+
+      </a>
+    </div>
+    
+    <input id="nav-toggle" type="checkbox" class="hidden" />
+    <label
+      for="nav-toggle"
+      class="order-3 cursor-pointer flex items-center lg:hidden text-text-dark dark:text-white lg:order-1">
+      <svg id="show-button" class="h-6 fill-current block" viewBox="0 0 20 20">
+        <title>Menu Open</title>
+        <path d="M0 3h20v2H0V3z m0 6h20v2H0V9z m0 6h20v2H0V0z"></path>
+      </svg>
+      <svg id="hide-button" class="h-6 fill-current hidden" viewBox="0 0 20 20">
+        <title>Menu Close</title>
+        <polygon
+          points="11 9 22 9 22 11 11 11 11 22 9 22 9 11 -2 11 -2 9 9 9 9 -2 11 -2"
+          transform="rotate(45 10 10)"></polygon>
+      </svg>
+    </label>
+    
+
+    
+    <ul
+      id="nav-menu"
+      class="navbar-nav order-3 hidden lg:flex w-full pb-6 lg:order-1 lg:w-auto lg:space-x-2 lg:pb-0 xl:space-x-8">
+      
+      
+        
+        
+        
+        
+          <li class="nav-item">
+            <a
+              class="nav-link "
+              
+              href="/about"
+              >About</a
+            >
+          </li>
+        
+      
+        
+        
+        
+        
+          <li class="nav-item">
+            <a
+              class="nav-link "
+              
+              href="/blog"
+              >Blog</a
+            >
+          </li>
+        
+      
+      
+    </ul>
+
+    <div class="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
+      
+
+      
+
+      
+
+
+  <div class="theme-switcher mr-5 hidden">
+    <input id="theme-switcher" data-theme-switcher type="checkbox" />
+    <label for="theme-switcher">
+      <span class="sr-only">theme switcher</span>
+      <span>
+        
+        <svg
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 opacity-100 dark:opacity-0"
+          viewBox="0 0 56 56"
+          fill="#fff"
+          height="16"
+          width="16">
+          <path
+            d="M30 4.6c0-1-.9-2-2-2a2 2 0 0 0-2 2v5c0 1 .9 2 2 2s2-1 2-2Zm9.6 9a2 2 0 0 0 0 2.8c.8.8 2 .8 2.9 0L46 13a2 2 0 0 0 0-2.9 2 2 0 0 0-3 0Zm-26 2.8c.7.8 2 .8 2.8 0 .8-.7.8-2 0-2.9L13 10c-.7-.7-2-.8-2.9 0-.7.8-.7 2.1 0 3ZM28 16a12 12 0 0 0-12 12 12 12 0 0 0 12 12 12 12 0 0 0 12-12 12 12 0 0 0-12-12Zm23.3 14c1.1 0 2-.9 2-2s-.9-2-2-2h-4.9a2 2 0 0 0-2 2c0 1.1 1 2 2 2ZM4.7 26a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4.9c1 0 2-.9 2-2s-1-2-2-2Zm37.8 13.6a2 2 0 0 0-3 0 2 2 0 0 0 0 2.9l3.6 3.5a2 2 0 0 0 2.9 0c.8-.8.8-2.1 0-3ZM10 43.1a2 2 0 0 0 0 2.9c.8.7 2.1.8 3 0l3.4-3.5c.8-.8.8-2.1 0-2.9-.8-.8-2-.8-2.9 0Zm20 3.4c0-1.1-.9-2-2-2a2 2 0 0 0-2 2v4.9c0 1 .9 2 2 2s2-1 2-2Z" />
+        </svg>
+        
+        <svg
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 opacity-0 dark:opacity-100"
+          viewBox="0 0 24 24"
+          fill="none"
+          height="16"
+          width="16">
+          <path
+            fill="#000"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M8.2 2.2c1-.4 2 .6 1.6 1.5-1 3-.4 6.4 1.8 8.7a8.4 8.4 0 0 0 8.7 1.8c1-.3 2 .5 1.5 1.5v.1a10.3 10.3 0 0 1-9.4 6.2A10.3 10.3 0 0 1 3.2 6.7c1-2 2.9-3.5 4.9-4.4Z" />
+        </svg>
+      </span>
+    </label>
+  </div>
+
+  
+  <script>
+    var darkMode = false;
+
+    
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches){darkMode = true}
+    
+
+    if (localStorage.getItem("theme") === "dark"){darkMode = true}
+    else if (localStorage.getItem("theme") === "light"){darkMode = false}
+
+    if (darkMode){document.documentElement.classList.add("dark")}
+    else {document.documentElement.classList.remove("dark")}
+
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      var themeSwitch = document.querySelectorAll("[data-theme-switcher]");
+      var themeSwitcherContainer = document.querySelector('.theme-switcher');
+
+      [].forEach.call(themeSwitch, function (ts) {
+        ts.checked = darkMode;
+        ts.addEventListener("click", () => {
+          document.documentElement.classList.toggle("dark");
+          localStorage.setItem(
+            "theme",
+            document.documentElement.classList.contains("dark") ? "dark" : "light"
+          );
+        });
+      });
+
+      
+      themeSwitcherContainer.classList.remove('hidden');
+    });
+  </script>
+
+
+
+
+      
+      
+    </div>
+  </nav>
+</header>
+
+    
+
+
+
+
+
+
+
+    <main>
+      
+  <section class="section pt-7">
+    <div class="container">
+      <div class="row justify-center">
+        <article class="lg:col-10">
+          
+          
+            <div class="mb-10">
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  
+    
+      
+    
+
+
+    
+    
+
+
+    
+    
+      
+      
+    
+    
+    
+
+
+    
+    
+      
+      
+        
+
+        
+        
+        
+        
+        
+        
+        
+
+
+        
+        
+
+
+        <picture>
+          <source
+            
+              srcset="/images/tokio_hu_7cdda5e40df1e12c.webp"
+            
+            media="(max-width: 575px)" />
+          <source
+            
+              srcset="/images/tokio_hu_d60225763cad97c5.webp"
+            
+            media="(max-width: 767px)" />
+          <source
+            
+              srcset="/images/tokio_hu_5f6562d7a674bfe8.webp"
+            
+            media="(max-width: 991px)" />
+          <source
+            
+              srcset="/images/tokio_hu_bd458de31e5ae161.webp"
+             />
+          <img
+            
+              loading="lazy" decoding="async"
+              src="/images/tokio_hu_73f825a2235f08b1.png"
+            class=" w-full rounded img"
+            alt="Async"
+            width="1536"
+            height="1024" />
+        </picture>
+      
+      
+    
+    
+  
+
+
+  
+
+
+            </div>
+          
+          <h1 class="h2 mb-4">
+            Async
+          </h1>
+          <ul class="mb-4">
+            <li class="mr-4 inline-block">
+              <a
+                href="/authors/shreyas-mishra/">
+                <i class="fa-regular fa-circle-user mr-2"></i
+                >Shreyas Mishra
+              </a>
+            </li>
+            
+            
+              <li class="mr-4 inline-block">
+                <i class="fa-regular fa-folder mr-2"></i>
+                
+                  <a
+                    href="/categories/rust/"
+                    class=""
+                    >Rust
+                      ,
+                    
+                  </a>
+                
+                  <a
+                    href="/categories/async/"
+                    class=""
+                    >Async
+                  </a>
+                
+              </li>
+            
+            <li class="mr-4 inline-block">
+              <i class="fa-regular fa-clock mr-2"></i>
+              March 10, 2025
+            </li>
+          </ul>
+          <div class="content mb-10">
+            
+
+ 
+  
+
+<details open class="table-of-content blog">
+  <summary>
+    
+      Table of Contents
+    
+  </summary>
+  <nav id="TableOfContents">
+  <ol>
+    <li><a href="#task-creation-and-management-in-tokio">Task Creation and Management in Tokio</a>
+      <ol>
+        <li><a href="#what-happens-under-the-hood-when-a-task-is-created">What Happens Under the Hood When a Task is Created</a></li>
+      </ol>
+    </li>
+    <li><a href="#tokios-scheduler-the-brain-of-the-operation">Tokio&rsquo;s Scheduler: The Brain of the Operation</a>
+      <ol>
+        <li><a href="#scheduler-architecture">Scheduler Architecture</a></li>
+        <li><a href="#task-scheduling-flow">Task Scheduling Flow</a></li>
+        <li><a href="#real-implementation-details">Real Implementation Details</a></li>
+      </ol>
+    </li>
+    <li><a href="#the-mechanics-of-await-where-the-magic-happens">The Mechanics of Await: Where the Magic Happens</a>
+      <ol>
+        <li><a href="#conceptual-example">Conceptual Example</a></li>
+        <li><a href="#the-state-machine-transformation">The State Machine Transformation</a></li>
+        <li><a href="#when-await-is-called">When <code>.await</code> is Called</a></li>
+        <li><a href="#detailed-execution-flow-with-state-transitions">Detailed Execution Flow With State Transitions</a></li>
+      </ol>
+    </li>
+    <li><a href="#implementing-mini-tokio-understanding-through-building">Implementing Mini-Tokio: Understanding Through Building</a></li>
+    <li><a href="#advanced-tokio-scheduler-behaviors">Advanced Tokio Scheduler Behaviors</a>
+      <ol>
+        <li><a href="#blocking-detection-and-mitigation">Blocking Detection and Mitigation</a></li>
+        <li><a href="#task-budget-and-yielding">Task Budget and Yielding</a></li>
+        <li><a href="#cooperative-cancellation">Cooperative Cancellation</a></li>
+      </ol>
+    </li>
+    <li><a href="#conclusion-the-power-and-elegance-of-tokio">Conclusion: The Power and Elegance of Tokio</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#why-yielding-is-necessary">Why Yielding is Necessary</a></li>
+    <li><a href="#how-to-implement-yielding-in-infinite-workers">How to Implement Yielding in Infinite Workers</a>
+      <ol>
+        <li><a href="#1-using-tokiotaskyield_now">1. Using <code>tokio::task::yield_now()</code></a></li>
+        <li><a href="#2-using-tokiotimesleep">2. Using <code>tokio::time::sleep()</code></a></li>
+        <li><a href="#3-building-on-real-async-operations">3. Building on Real Async Operations</a></li>
+      </ol>
+    </li>
+    <li><a href="#what-happens-if-you-dont-yield">What Happens If You Don&rsquo;t Yield?</a></li>
+    <li><a href="#a-complete-example">A Complete Example</a></li>
+    <li><a href="#best-practices-for-infinite-workers">Best Practices for Infinite Workers</a></li>
+  </ol>
+</nav>
+</details>
+
+            <h1 id="diving-deeper-into-tokio-task-creation-scheduling-and-the-mechanics-of-await">Diving Deeper into Tokio: Task Creation, Scheduling, and the Mechanics of Await</h1>
+<p>In our previous exploration of Tokio, we covered the foundational concepts. Now, let&rsquo;s dive deeper into how Tokio manages concurrent tasks, how its scheduler works, and what really happens when you use the <code>.await</code> keyword.</p>
+<h2 id="task-creation-and-management-in-tokio">Task Creation and Management in Tokio</h2>
+<p>When you create tasks in Tokio, you&rsquo;re essentially telling the runtime to manage independent units of work that can progress concurrently. Let&rsquo;s build a more complex example to understand this better:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> tokio::time::{sleep, Duration};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::sync::{Arc, Mutex};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[tokio::main]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Shared state to track task completion
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> counter <span style="color:#f92672">=</span> Arc::new(Mutex::new(<span style="color:#ae81ff">0</span>));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Store join handles to await them later
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> handles <span style="color:#f92672">=</span> Vec::new();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create 10 tasks with different behaviors
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span><span style="color:#ae81ff">10</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> counter_clone <span style="color:#f92672">=</span> Arc::clone(<span style="color:#f92672">&amp;</span>counter);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Spawn a new task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">let</span> handle <span style="color:#f92672">=</span> tokio::spawn(<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">move</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Simulate different processing times
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            sleep(Duration::from_millis(i <span style="color:#f92672">*</span> <span style="color:#ae81ff">100</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Critical section - update shared state
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> count <span style="color:#f92672">=</span> counter_clone.lock().unwrap();
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">*</span>count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>                println!(<span style="color:#e6db74">&#34;Task </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> completed. Counter: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, i, <span style="color:#f92672">*</span>count);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Return a result from this task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            i <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        handles.push(handle);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Process task results as they complete
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> handle <span style="color:#66d9ef">in</span> handles {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">match</span> handle.<span style="color:#66d9ef">await</span> {
+</span></span><span style="display:flex;"><span>            Ok(result) <span style="color:#f92672">=&gt;</span> println!(<span style="color:#e6db74">&#34;Got result: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, result),
+</span></span><span style="display:flex;"><span>            Err(e) <span style="color:#f92672">=&gt;</span> eprintln!(<span style="color:#e6db74">&#34;Task failed: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, e),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Final counter value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    println!(<span style="color:#e6db74">&#34;All tasks done. Final count: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#f92672">*</span>counter.lock().unwrap());
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="what-happens-under-the-hood-when-a-task-is-created">What Happens Under the Hood When a Task is Created</h3>
+<p>When <code>tokio::spawn()</code> is called, several important steps occur:</p>
+<ol>
+<li>
+<p><strong>Future Transformation</strong>: Your async block is transformed into a state machine that implements <code>Future</code>.</p>
+</li>
+<li>
+<p><strong>Task Allocation</strong>: Tokio creates a <code>Task&lt;T&gt;</code> struct that wraps your future. This includes:</p>
+<ul>
+<li>The future itself</li>
+<li>Scheduling metadata</li>
+<li>Cancellation state</li>
+<li>Memory for the output value</li>
+</ul>
+</li>
+<li>
+<p><strong>Header Creation</strong>: Each task has a header containing:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Header</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Current state of the task
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    state: <span style="color:#a6e22e">AtomicUsize</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Pointer back to the owning scheduler
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    owner: <span style="color:#f92672">*</span><span style="color:#66d9ef">const</span> Scheduler,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Queue links for the scheduler
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    queue_next: <span style="color:#a6e22e">UnsafeCell</span><span style="color:#f92672">&lt;*</span><span style="color:#66d9ef">const</span> Header<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Reference count
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    ref_count: <span style="color:#a6e22e">AtomicUsize</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Task Registration</strong>: The task is registered with the scheduler by adding it to the appropriate queue.</p>
+</li>
+<li>
+<p><strong>Waker Setup</strong>: A waker is configured for the task so the runtime knows how to resume it.</p>
+</li>
+</ol>
+<p>The actual implementation in Tokio is more complex, using specialized memory management and optimizations, but this is the conceptual structure.</p>
+<h2 id="tokios-scheduler-the-brain-of-the-operation">Tokio&rsquo;s Scheduler: The Brain of the Operation</h2>
+<p>Tokio&rsquo;s multi-threaded scheduler is a sophisticated work-stealing system inspired by Golang&rsquo;s scheduler. Let&rsquo;s explore how tasks are actually scheduled.</p>
+<h3 id="scheduler-architecture">Scheduler Architecture</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">// Conceptual representation of Tokio&#39;s scheduler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Scheduler</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Worker threads
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    workers: Vec<span style="color:#f92672">&lt;</span>Worker<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Global task queue
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    global_queue: <span style="color:#a6e22e">UnboundedSender</span><span style="color:#f92672">&lt;</span>Task<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Shutdown signal
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    shutdown: <span style="color:#a6e22e">AtomicBool</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Worker</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Thread handle
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    thread: Option<span style="color:#f92672">&lt;</span>JoinHandle<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Local task queue
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    local_queue: <span style="color:#a6e22e">Deque</span><span style="color:#f92672">&lt;</span>Task<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Reference to all workers for stealing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    stealers: Vec<span style="color:#f92672">&lt;</span>Stealer<span style="color:#f92672">&lt;</span>Task<span style="color:#f92672">&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Worker ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    id: <span style="color:#66d9ef">usize</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="task-scheduling-flow">Task Scheduling Flow</h3>
+<ol>
+<li>
+<p><strong>Initial Placement</strong>: When a task is spawned, it&rsquo;s placed in the local queue of the worker thread that spawned it.</p>
+</li>
+<li>
+<p><strong>Work Stealing</strong>: If a worker runs out of tasks in its local queue:</p>
+<ul>
+<li>It checks the global queue first</li>
+<li>If the global queue is empty, it attempts to steal tasks from other workers</li>
+<li>It steals half of another worker&rsquo;s queue to minimize contention</li>
+</ul>
+</li>
+<li>
+<p><strong>Task Execution</strong>: When a worker picks a task to run:</p>
+<ul>
+<li>It calls <code>poll()</code> on the task&rsquo;s future</li>
+<li>If the future completes, the result is stored and any waiters are notified</li>
+<li>If the future is pending, the task is suspended until its waker is called</li>
+</ul>
+</li>
+</ol>
+<p>Let&rsquo;s visualize how our 10 tasks from the earlier example might be distributed:</p>
+<pre tabindex="0"><code>Worker 1: [Task 0] [Task 4] [Task 8]
+Worker 2: [Task 1] [Task 5] [Task 9]
+Worker 3: [Task 2] [Task 6]
+Worker 4: [Task 3] [Task 7]
+</code></pre><p>If Worker 4 processes its tasks quickly, it might steal tasks from Worker 1:</p>
+<pre tabindex="0"><code>Worker 1: [Task 0] [Task 4]
+Worker 2: [Task 1] [Task 5] [Task 9]
+Worker 3: [Task 2] [Task 6]
+Worker 4: [Task 8] [Task 3] [Task 7]
+</code></pre><h3 id="real-implementation-details">Real Implementation Details</h3>
+<p>In reality, Tokio uses a more sophisticated approach:</p>
+<ol>
+<li><strong>LIFO Local Queues</strong>: Each worker has a LIFO (stack) queue for better cache locality</li>
+<li><strong>FIFO Stealing</strong>: When stealing, tasks are taken in FIFO order</li>
+<li><strong>Thread Parking</strong>: Workers will park their threads when no work is available</li>
+<li><strong>Priorities</strong>: Some tasks can be given higher priority</li>
+</ol>
+<h2 id="the-mechanics-of-await-where-the-magic-happens">The Mechanics of Await: Where the Magic Happens</h2>
+<p>The <code>.await</code> keyword is where Rust&rsquo;s async system and Tokio&rsquo;s runtime truly connect. Let&rsquo;s demystify what happens when you call <code>.await</code>.</p>
+<h3 id="conceptual-example">Conceptual Example</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">process_data</span>(data: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u32</span><span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#66d9ef">u32</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This will be transformed into a state machine
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> intermediate <span style="color:#f92672">=</span> transform_data(data).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> validate_result(intermediate).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    result
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="the-state-machine-transformation">The State Machine Transformation</h3>
+<p>The compiler transforms this into a state machine with approximately these states:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">ProcessDataStateMachine</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Initial state
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Start(Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u32</span><span style="color:#f92672">&gt;</span>),
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Waiting for transform_data to complete
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    WaitingOnTransform(TransformFuture),
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Waiting for validate_result to complete
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    WaitingOnValidate(ValidateFuture, IntermediateData),
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Completed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Done,
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="when-await-is-called">When <code>.await</code> is Called</h3>
+<p>Let&rsquo;s walk through what happens at runtime when <code>.await</code> is encountered:</p>
+<ol>
+<li>
+<p><strong>Future Creation</strong>: The expression before <code>.await</code> creates a future</p>
+</li>
+<li>
+<p><strong>Initial Poll</strong>: The future is polled once immediately</p>
+</li>
+<li>
+<p><strong>Ready Check</strong>: If the future is immediately ready:</p>
+<ul>
+<li>The result is extracted</li>
+<li>Execution continues to the next statement</li>
+</ul>
+</li>
+<li>
+<p><strong>Suspension</strong>: If the future is not ready:</p>
+<ul>
+<li>The current task&rsquo;s state is saved (locals, position in code)</li>
+<li>The future registers interest in some event with a waker</li>
+<li>Control returns to the scheduler, which can run other tasks</li>
+</ul>
+</li>
+<li>
+<p><strong>Wakeup</strong>: When the event occurs:</p>
+<ul>
+<li>The waker is called, marking the task as ready</li>
+<li>The scheduler places the task back in a queue</li>
+</ul>
+</li>
+<li>
+<p><strong>Resumption</strong>: When the scheduler runs the task again:</p>
+<ul>
+<li>The future is polled again</li>
+<li>If ready, execution continues after the <code>.await</code></li>
+<li>If still pending, steps 4-6 repeat</li>
+</ul>
+</li>
+</ol>
+<p>Let&rsquo;s see this in a more concrete example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[tokio::main]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create multiple tasks that interact
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> (tx, rx) <span style="color:#f92672">=</span> tokio::sync::oneshot::channel();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Task 1: sender
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> sender_task <span style="color:#f92672">=</span> tokio::spawn(<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">move</span> {
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Sender: preparing data...&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Simulate work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        tokio::time::sleep(Duration::from_millis(<span style="color:#ae81ff">500</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Sender: sending data&#34;</span>);
+</span></span><span style="display:flex;"><span>        tx.send(<span style="color:#e6db74">&#34;Hello from task 1&#34;</span>).unwrap();
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Task 2: receiver
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> receiver_task <span style="color:#f92672">=</span> tokio::spawn(<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">move</span> {
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Receiver: waiting for data...&#34;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// This await will suspend this task until data arrives
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">match</span> rx.<span style="color:#66d9ef">await</span> {
+</span></span><span style="display:flex;"><span>            Ok(message) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                println!(<span style="color:#e6db74">&#34;Receiver: got message: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, message);
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// More processing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                tokio::time::sleep(Duration::from_millis(<span style="color:#ae81ff">200</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>                println!(<span style="color:#e6db74">&#34;Receiver: processed message&#34;</span>);
+</span></span><span style="display:flex;"><span>                message
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            Err(_) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                println!(<span style="color:#e6db74">&#34;Receiver: sender dropped&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;default message&#34;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Wait for both tasks
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> _ <span style="color:#f92672">=</span> sender_task.<span style="color:#66d9ef">await</span>.unwrap();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> receiver_task.<span style="color:#66d9ef">await</span>.unwrap();
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Main: final result: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, result);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="detailed-execution-flow-with-state-transitions">Detailed Execution Flow With State Transitions</h3>
+<p>Let&rsquo;s trace the exact execution flow of the above code:</p>
+<ol>
+<li>
+<p><strong>Runtime Start</strong>:</p>
+<ul>
+<li>Tokio runtime initializes (thread pool, I/O drivers, etc.)</li>
+<li>Main task enters the scheduler</li>
+</ul>
+</li>
+<li>
+<p><strong>Task Creation</strong>:</p>
+<ul>
+<li>Two tasks are created and their futures are wrapped in <code>Task</code> structures</li>
+<li>Tasks are pushed to the scheduler&rsquo;s queue</li>
+</ul>
+</li>
+<li>
+<p><strong>Main Task Suspension</strong>:</p>
+<ul>
+<li>Main task awaits <code>sender_task</code> completion</li>
+<li>Since <code>sender_task</code> isn&rsquo;t done, main task suspends</li>
+<li>Waker for <code>sender_task</code> is configured to wake main task</li>
+</ul>
+</li>
+<li>
+<p><strong>Scheduler Decisions</strong>:</p>
+<ul>
+<li>Scheduler picks the next task (likely sender or receiver)</li>
+<li>Let&rsquo;s say receiver runs first</li>
+</ul>
+</li>
+<li>
+<p><strong>Receiver Task Execution</strong>:</p>
+<ul>
+<li>Prints &ldquo;Receiver: waiting for data&hellip;&rdquo;</li>
+<li>Calls <code>.await</code> on <code>rx</code></li>
+<li>Since no data is available, registers interest in the channel</li>
+<li>Suspends and returns control to scheduler</li>
+</ul>
+</li>
+<li>
+<p><strong>Sender Task Execution</strong>:</p>
+<ul>
+<li>Prints &ldquo;Sender: preparing data&hellip;&rdquo;</li>
+<li>Calls <code>.await</code> on <code>sleep</code></li>
+<li>Registers interest in the timer with the time driver</li>
+<li>Suspends and returns control to scheduler</li>
+</ul>
+</li>
+<li>
+<p><strong>Idle Period</strong>:</p>
+<ul>
+<li>All tasks are waiting on events</li>
+<li>Tokio&rsquo;s time driver monitors the timer</li>
+</ul>
+</li>
+<li>
+<p><strong>Timer Completion</strong>:</p>
+<ul>
+<li>After 500ms, time driver triggers the waker for the sleep future</li>
+<li>Sender task is marked ready and queued</li>
+</ul>
+</li>
+<li>
+<p><strong>Sender Task Resumption</strong>:</p>
+<ul>
+<li>Sender continues after the sleep</li>
+<li>Prints &ldquo;Sender: sending data&rdquo;</li>
+<li>Calls <code>tx.send(...)</code> which completes the channel</li>
+<li>This triggers the waker for the channel</li>
+<li>Receiver task is marked ready and queued</li>
+<li>Sender task completes, notifying <code>sender_task.await</code> in main</li>
+</ul>
+</li>
+<li>
+<p><strong>Receiver Task Resumption</strong>:</p>
+<ul>
+<li>Receiver continues after <code>rx.await</code></li>
+<li>Prints message</li>
+<li>Awaits another sleep</li>
+<li>Suspends again</li>
+</ul>
+</li>
+<li>
+<p><strong>Main Task Partial Resumption</strong>:</p>
+<ul>
+<li>Main continues after <code>sender_task.await</code></li>
+<li>Awaits <code>receiver_task</code> completion</li>
+<li>Suspends again</li>
+</ul>
+</li>
+<li>
+<p><strong>Final Steps</strong>:</p>
+<ul>
+<li>After 200ms, receiver&rsquo;s timer completes</li>
+<li>Receiver task resumes, completes</li>
+<li>Main task wakes up, prints final result</li>
+</ul>
+</li>
+</ol>
+<h2 id="implementing-mini-tokio-understanding-through-building">Implementing Mini-Tokio: Understanding Through Building</h2>
+<p>To truly understand Tokio&rsquo;s inner workings, let&rsquo;s build a simplified version that demonstrates the core concepts of tasks and the runtime. This isn&rsquo;t production-ready, but it illustrates the concepts:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> futures::future::BoxFuture;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> futures::{Future, FutureExt};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::cell::RefCell;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::collections::VecDeque;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::pin::Pin;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::sync::{Arc, Mutex};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::task::{Context, Poll, Wake, Waker};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/// A very simplified task scheduler
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">MiniTokio</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Tasks that are ready to run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    ready_queue: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Mutex<span style="color:#f92672">&lt;</span>VecDeque<span style="color:#f92672">&lt;</span>Task<span style="color:#f92672">&gt;&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A spawned future with its waker
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Task</span> <span style="color:#f92672">=</span> Arc<span style="color:#f92672">&lt;</span>TaskInner<span style="color:#f92672">&gt;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">TaskInner</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The future to execute
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    future: <span style="color:#a6e22e">RefCell</span><span style="color:#f92672">&lt;</span>BoxFuture<span style="color:#f92672">&lt;</span>&#39;static, ()<span style="color:#f92672">&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Queue to push this task to when ready
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    queue: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Mutex<span style="color:#f92672">&lt;</span>VecDeque<span style="color:#f92672">&lt;</span>Task<span style="color:#f92672">&gt;&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Implementation of the waker that notifies our scheduler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">impl</span> Wake <span style="color:#66d9ef">for</span> TaskInner {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">wake</span>(self: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>Self<span style="color:#f92672">&gt;</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Push this task to the ready queue
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        self.queue.lock().unwrap().push_back(self.clone());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> MiniTokio {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        MiniTokio {
+</span></span><span style="display:flex;"><span>            ready_queue: <span style="color:#a6e22e">Arc</span>::new(Mutex::new(VecDeque::new())),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Spawn a new task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">spawn</span><span style="color:#f92672">&lt;</span>F<span style="color:#f92672">&gt;</span>(<span style="color:#f92672">&amp;</span>self, future: <span style="color:#a6e22e">F</span>) 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">where</span>
+</span></span><span style="display:flex;"><span>        F: <span style="color:#a6e22e">Future</span><span style="color:#f92672">&lt;</span>Output <span style="color:#f92672">=</span> ()<span style="color:#f92672">&gt;</span> <span style="color:#f92672">+</span> Send <span style="color:#f92672">+</span> &#39;static,
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> task <span style="color:#f92672">=</span> Arc::new(TaskInner {
+</span></span><span style="display:flex;"><span>            future: <span style="color:#a6e22e">RefCell</span>::new(future.boxed()),
+</span></span><span style="display:flex;"><span>            queue: <span style="color:#a6e22e">self</span>.ready_queue.clone(),
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Push the task to the ready queue
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        self.ready_queue.lock().unwrap().push_back(task);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Run the mini runtime
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">run</span>(<span style="color:#f92672">&amp;</span>self) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Get the next task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">let</span> task <span style="color:#f92672">=</span> <span style="color:#66d9ef">match</span> self.ready_queue.lock().unwrap().pop_front() {
+</span></span><span style="display:flex;"><span>                Some(task) <span style="color:#f92672">=&gt;</span> task,
+</span></span><span style="display:flex;"><span>                None <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">break</span>, <span style="color:#75715e">// No more tasks to execute
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            };
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Create a waker for this task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">let</span> waker <span style="color:#f92672">=</span> waker_from_task(task.clone());
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> context <span style="color:#f92672">=</span> Context::from_waker(<span style="color:#f92672">&amp;</span>waker);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Poll the future
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> future <span style="color:#f92672">=</span> task.future.borrow_mut();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Check if the future has completed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Poll::Ready(_) <span style="color:#f92672">=</span> Pin::new(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> <span style="color:#f92672">*</span>future).poll(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> context) {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Task completed, don&#39;t push it back to the queue
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// If Poll::Pending, the future will wake us up via the waker when ready
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Helper function to create a waker from a task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">waker_from_task</span>(task: <span style="color:#a6e22e">Task</span>) -&gt; <span style="color:#a6e22e">Waker</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This would use unsafe in real Tokio to create a waker directly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Here we&#39;ll use the simplification from futures crate
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    futures::task::waker(task)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Example usage
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#[tokio::main]</span> <span style="color:#75715e">// We still need tokio for the async/await functionality
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Create our mini runtime
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> mini_tokio <span style="color:#f92672">=</span> MiniTokio::new();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Spawn a task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    mini_tokio.spawn(<span style="color:#66d9ef">async</span> {
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Task 1: Starting&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Simulate an async operation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// In a real implementation, this would be non-blocking
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std::thread::sleep(std::time::Duration::from_millis(<span style="color:#ae81ff">100</span>));
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Task 1: Completed&#34;</span>);
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Spawn another task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    mini_tokio.spawn(<span style="color:#66d9ef">async</span> {
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Task 2: Starting&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Simulate a longer async operation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        std::thread::sleep(std::time::Duration::from_millis(<span style="color:#ae81ff">200</span>));
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Task 2: Completed&#34;</span>);
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Run our mini runtime
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    mini_tokio.run();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This simplified implementation shows the core concepts:</p>
+<ol>
+<li><strong>Tasks</strong>: Each task contains a future and knows how to wake itself up</li>
+<li><strong>Wakers</strong>: The connection between an event and task resumption</li>
+<li><strong>Scheduler</strong>: The queue and execution loop that drives tasks forward</li>
+<li><strong>Polling Mechanism</strong>: How futures are driven to completion</li>
+</ol>
+<h2 id="advanced-tokio-scheduler-behaviors">Advanced Tokio Scheduler Behaviors</h2>
+<p>With our foundation in place, let&rsquo;s look at some more advanced aspects of Tokio&rsquo;s scheduler:</p>
+<h3 id="blocking-detection-and-mitigation">Blocking Detection and Mitigation</h3>
+<p>Tokio can detect when a task is blocking the thread for too long and will take action:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[tokio::main]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This spawns on the current thread pool
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    tokio::spawn(<span style="color:#66d9ef">async</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// This would block the thread
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> tokio::task::block_in_place(<span style="color:#f92672">||</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Expensive CPU operation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            compute_fibonacci(<span style="color:#ae81ff">1000000</span>)
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Result: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, result);
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This spawns on a dedicated blocking thread pool
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    tokio::task::spawn_blocking(<span style="color:#f92672">||</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// CPU-intensive work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span><span style="color:#ae81ff">1000</span> {
+</span></span><span style="display:flex;"><span>            std::thread::sleep(std::time::Duration::from_millis(<span style="color:#ae81ff">1</span>));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }).<span style="color:#66d9ef">await</span>.unwrap();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Under the hood, Tokio:</p>
+<ol>
+<li>Detects thread blocking with a combination of timing and heuristics</li>
+<li>Spawns a replacement worker thread when needed</li>
+<li>Maintains a separate thread pool for known blocking operations</li>
+</ol>
+<h3 id="task-budget-and-yielding">Task Budget and Yielding</h3>
+<p>Tokio implements a &ldquo;task budget&rdquo; system to ensure fair execution:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">cpu_intensive_task</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Do some work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> _ <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span><span style="color:#ae81ff">1_000_000</span> {
+</span></span><span style="display:flex;"><span>            counter <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Yield to let other tasks run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        tokio::task::yield_now().<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;Counter: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, counter);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>When a task exceeds its budget (measured in &ldquo;ticks&rdquo; of CPU time):</p>
+<ol>
+<li>The runtime automatically yields it, even without an explicit <code>.await</code></li>
+<li>Other tasks get a chance to run</li>
+<li>The yielded task goes back to the end of the queue</li>
+</ol>
+<h3 id="cooperative-cancellation">Cooperative Cancellation</h3>
+<p>Tasks can be cancelled through dropping their join handles:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[tokio::main]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> handle <span style="color:#f92672">=</span> tokio::spawn(<span style="color:#66d9ef">async</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>            println!(<span style="color:#e6db74">&#34;I&#39;m still running!&#34;</span>);
+</span></span><span style="display:flex;"><span>            tokio::time::sleep(Duration::from_secs(<span style="color:#ae81ff">1</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Wait for a bit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    tokio::time::sleep(Duration::from_secs(<span style="color:#ae81ff">3</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Cancel the task by dropping its handle
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    drop(handle);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Give some time to see it&#39;s gone
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    tokio::time::sleep(Duration::from_secs(<span style="color:#ae81ff">2</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Task should be cancelled now&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The cancellation process:</p>
+<ol>
+<li>When the join handle is dropped, the task is marked for cancellation</li>
+<li>When the task reaches its next <code>.await</code> point, cancellation is checked</li>
+<li>If cancellation is detected, the future&rsquo;s memory is dropped and resources freed</li>
+<li>There&rsquo;s no forceful termination - tasks must cooperate by having <code>.await</code> points</li>
+</ol>
+<h2 id="conclusion-the-power-and-elegance-of-tokio">Conclusion: The Power and Elegance of Tokio</h2>
+<p>Tokio&rsquo;s design represents a masterful balance between performance, safety, and ergonomics. By understanding how tasks are created, scheduled, and how <code>.await</code> works under the hood, we gain appreciation for the machinery that makes asynchronous Rust so powerful.</p>
+<p>The real beauty of Tokio is that it handles all this complexity while presenting a clean API that lets developers focus on business logic rather than concurrency mechanics. The same principles that power Tokio - efficient scheduling, cooperative multitasking, and event-driven I/O - power many of the world&rsquo;s most performance-critical systems.</p>
+<p>Whether you&rsquo;re building a high-performance web server, a data processing pipeline, or just learning asynchronous programming, the knowledge of Tokio&rsquo;s internals will help you write more efficient and correct asynchronous Rust code.</p>
+<h1 id="yielding-in-infinite-workers-a-crucial-concept-in-async-rust">Yielding in Infinite Workers: A Crucial Concept in Async Rust</h1>
+<p>Yes, you&rsquo;ve touched on a critical insight about async Rust! For an infinitely running worker (like a long-running loop or continuous processing task), you absolutely need to implement explicit yielding to allow other tasks to execute.</p>
+<h2 id="why-yielding-is-necessary">Why Yielding is Necessary</h2>
+<p>In Rust&rsquo;s cooperative multitasking model, tasks only give up control at <code>.await</code> points. Without an <code>.await</code> somewhere in your loop, an infinite worker would monopolize the thread and effectively starve all other tasks:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">// Problematic infinite worker - will prevent other tasks from running
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">bad_infinite_worker</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Process messages, check conditions, do work...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// This loop never yields, so it will block the thread forever
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This task would grab the thread and never let go, which defeats the whole purpose of the async model.</p>
+<h2 id="how-to-implement-yielding-in-infinite-workers">How to Implement Yielding in Infinite Workers</h2>
+<p>Here are the main approaches to properly implement yielding in an infinite worker:</p>
+<h3 id="1-using-tokiotaskyield_now">1. Using <code>tokio::task::yield_now()</code></h3>
+<p>The most direct approach is to periodically call <code>yield_now()</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">good_infinite_worker</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Do some bounded amount of work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> _ <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span><span style="color:#ae81ff">1000</span> {
+</span></span><span style="display:flex;"><span>            process_message();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Explicitly yield to the scheduler to let other tasks run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        tokio::task::yield_now().<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is saying &ldquo;I&rsquo;m voluntarily giving up my turn so other tasks can run.&rdquo; It&rsquo;s the simplest and most explicit way to yield.</p>
+<h3 id="2-using-tokiotimesleep">2. Using <code>tokio::time::sleep()</code></h3>
+<p>Another common approach is to introduce a tiny sleep:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">good_infinite_worker_with_sleep</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Do some work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        process_batch();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Sleep for a very short time - this both yields and adds a tiny delay
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        tokio::time::sleep(Duration::from_millis(<span style="color:#ae81ff">1</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This approach not only yields but also prevents the worker from consuming 100% CPU time when idle, which can be beneficial in some scenarios.</p>
+<h3 id="3-building-on-real-async-operations">3. Building on Real Async Operations</h3>
+<p>The most natural approach is to base your worker on truly asynchronous operations that will yield naturally:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">natural_yielding_worker</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// This naturally yields when the channel is empty
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">match</span> channel.recv().<span style="color:#66d9ef">await</span> {
+</span></span><span style="display:flex;"><span>            Some(message) <span style="color:#f92672">=&gt;</span> process_message(message),
+</span></span><span style="display:flex;"><span>            None <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">break</span>, <span style="color:#75715e">// Channel closed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>When your worker waits for real I/O or other async events (like channel operations), it naturally yields when those operations aren&rsquo;t immediately ready.</p>
+<h2 id="what-happens-if-you-dont-yield">What Happens If You Don&rsquo;t Yield?</h2>
+<p>If you have an infinite worker without yielding:</p>
+<ol>
+<li>The worker task will monopolize the thread it&rsquo;s running on</li>
+<li>Other tasks scheduled on that thread will be starved (never get a chance to run)</li>
+<li>If using Tokio&rsquo;s multi-threaded runtime, only tasks on that one thread are affected</li>
+<li>If using single-threaded runtime, all tasks are blocked</li>
+</ol>
+<p>This can lead to:</p>
+<ul>
+<li>Timeouts in other tasks</li>
+<li>Reduced throughput</li>
+<li>Unresponsive applications</li>
+<li>Deadlocks if the monopolizing task is waiting for something from another starved task</li>
+</ul>
+<h2 id="a-complete-example">A Complete Example</h2>
+<p>Here&rsquo;s a more complete example showing proper yielding in an infinite worker:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> tokio::sync::mpsc;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> tokio::time::{sleep, Duration};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[tokio::main]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Channel for communication
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> (tx, rx) <span style="color:#f92672">=</span> mpsc::channel(<span style="color:#ae81ff">100</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Spawn the worker task
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> worker <span style="color:#f92672">=</span> tokio::spawn(infinite_worker(rx));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Spawn a task that sends messages to the worker
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> producer <span style="color:#f92672">=</span> tokio::spawn(<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">move</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span><span style="color:#ae81ff">1000</span> {
+</span></span><span style="display:flex;"><span>            tx.send(i).<span style="color:#66d9ef">await</span>.unwrap();
+</span></span><span style="display:flex;"><span>            sleep(Duration::from_millis(<span style="color:#ae81ff">10</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Spawn a task that just prints periodically to show it&#39;s still running
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> heartbeat <span style="color:#f92672">=</span> tokio::spawn(<span style="color:#66d9ef">async</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span><span style="color:#ae81ff">100</span> {
+</span></span><span style="display:flex;"><span>            println!(<span style="color:#e6db74">&#34;Heartbeat </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, i);
+</span></span><span style="display:flex;"><span>            sleep(Duration::from_millis(<span style="color:#ae81ff">100</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Wait for the producer to finish
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    producer.<span style="color:#66d9ef">await</span>.unwrap();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Wait for the heartbeat to finish
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    heartbeat.<span style="color:#66d9ef">await</span>.unwrap();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Cancel the worker (it would run forever otherwise)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    worker.abort();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">infinite_worker</span>(<span style="color:#66d9ef">mut</span> rx: <span style="color:#a6e22e">mpsc</span>::Receiver<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">i32</span><span style="color:#f92672">&gt;</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Approach 1: Process a batch of messages if available
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> _ <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span><span style="color:#ae81ff">10</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">match</span> rx.try_recv() {
+</span></span><span style="display:flex;"><span>                Ok(msg) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// Process message
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    counter <span style="color:#f92672">+=</span> msg;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                Err(_) <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">break</span>,
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Simulate some CPU-bound work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span><span style="color:#ae81ff">10000</span> {
+</span></span><span style="display:flex;"><span>            sum <span style="color:#f92672">+=</span> i;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Approach 2: Explicitly yield to let other tasks run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        tokio::task::yield_now().<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Approach 3: Or use a minimal sleep
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// sleep(Duration::from_micros(1)).await;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Approach 4: Or wait for the next message (natural yielding)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// if let Some(msg) = rx.recv().await {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">//     counter += msg;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// } else {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">//     break; // Channel closed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> counter <span style="color:#f92672">%</span> <span style="color:#ae81ff">1000</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>            println!(<span style="color:#e6db74">&#34;Worker processed counter = </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, counter);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="best-practices-for-infinite-workers">Best Practices for Infinite Workers</h2>
+<ol>
+<li>
+<p><strong>Have a clear yield strategy</strong>: Decide how and when your worker will yield.</p>
+</li>
+<li>
+<p><strong>Choose an appropriate yield frequency</strong>: Too frequent yields add overhead, too infrequent yields cause starvation.</p>
+</li>
+<li>
+<p><strong>Consider work batch sizes</strong>: Process a reasonable batch of work between yields.</p>
+</li>
+<li>
+<p><strong>Use natural async points when possible</strong>: Base your worker on channel operations, I/O, or other naturally async operations.</p>
+</li>
+<li>
+<p><strong>Add monitoring</strong>: Consider adding metrics to track how long your worker runs between yields.</p>
+</li>
+<li>
+<p><strong>Consider backpressure</strong>: If your worker can&rsquo;t keep up, implement mechanisms to handle backpressure.</p>
+</li>
+</ol>
+<p>The most elegant workers often combine both natural async operations with occasional explicit yields as a safety mechanism. This provides the best balance between performance and cooperative behavior.</p>
+<p>Remember: In the cooperative world of async Rust, being a good citizen means yielding regularly to let other tasks have their turn!</p>
+
+          </div>
+          <div class="row items-start justify-between">
+            
+            
+              <div class="lg:col-6 mb-10 flex items-center lg:mb-0">
+                <h5 class="mr-3">Tags :</h5>
+                <ul>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/rust/">
+                        Rust
+                      </a>
+                    </li>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/async/">
+                        Async
+                      </a>
+                    </li>
+                  
+                </ul>
+              </div>
+            
+            <div class="lg:col-6 flex items-center">
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="share-icons lg:ml-auto">
+  <h5 class="share-title">Share :</h5>
+
+
+  
+  
+    <a
+      class="share-link share-facebook"
+      href="https://facebook.com/sharer/sharer.php?u=%2f%2flocalhost%3a1313%2fblog%2fasync%2f"
+      target="_blank"
+      rel="noopener"
+      aria-label="share facebook">
+      <span class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-twitter"
+      href="https://twitter.com/intent/tweet/?text=Share&amp;url=%2f%2flocalhost%3a1313%2fblog%2fasync%2f"
+      target="_blank"
+      rel="noopener"
+      aria-label="share twitter">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path 
+            d="M8 2H1l8.26 11.015L1.45 22H4.1l6.388-7.349L16 22h7l-8.608-11.478L21.8 2h-2.65l-5.986 6.886zm9 18L5 4h2l12 16z"/>
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-email"
+      href="mailto:?subject=Share&amp;body=%2f%2flocalhost%3a1313%2fblog%2fasync%2f"
+      target="_self"
+      rel="noopener"
+      aria-label="share email">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.25 14.43l-3.5 2c-.08.05-.17.07-.25.07-.17 0-.34-.1-.43-.25-.14-.24-.06-.55.18-.68l3.5-2c.24-.14.55-.06.68.18.14.24.06.55-.18.68zm4.75.07c-.1 0-.2-.03-.27-.08l-8.5-5.5c-.23-.15-.3-.46-.15-.7.15-.22.46-.3.7-.14L12 13.4l8.23-5.32c.23-.15.54-.08.7.15.14.23.07.54-.16.7l-8.5 5.5c-.08.04-.17.07-.27.07zm8.93 1.75c-.1.16-.26.25-.43.25-.08 0-.17-.02-.25-.07l-3.5-2c-.24-.13-.32-.44-.18-.68s.44-.32.68-.18l3.5 2c.24.13.32.44.18.68z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-reddit"
+      href="https://reddit.com/submit/?url=%2f%2flocalhost%3a1313%2fblog%2fasync%2f&amp;resubmit=true&amp;title=Share"
+      target="_blank"
+      rel="noopener"
+      aria-label="share reddit">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M24 11.5c0-1.65-1.35-3-3-3-.96 0-1.86.48-2.42 1.24-1.64-1-3.75-1.64-6.07-1.72.08-1.1.4-3.05 1.52-3.7.72-.4 1.73-.24 3 .5C17.2 6.3 18.46 7.5 20 7.5c1.65 0 3-1.35 3-3s-1.35-3-3-3c-1.38 0-2.54.94-2.88 2.22-1.43-.72-2.64-.8-3.6-.25-1.64.94-1.95 3.47-2 4.55-2.33.08-4.45.7-6.1 1.72C4.86 8.98 3.96 8.5 3 8.5c-1.65 0-3 1.35-3 3 0 1.32.84 2.44 2.05 2.84-.03.22-.05.44-.05.66 0 3.86 4.5 7 10 7s10-3.14 10-7c0-.22-.02-.44-.05-.66 1.2-.4 2.05-1.54 2.05-2.84zM2.3 13.37C1.5 13.07 1 12.35 1 11.5c0-1.1.9-2 2-2 .64 0 1.22.32 1.6.82-1.1.85-1.92 1.9-2.3 3.05zm3.7.13c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9.8 4.8c-1.08.63-2.42.96-3.8.96-1.4 0-2.74-.34-3.8-.95-.24-.13-.32-.44-.2-.68.15-.24.46-.32.7-.18 1.83 1.06 4.76 1.06 6.6 0 .23-.13.53-.05.67.2.14.23.06.54-.18.67zm.2-2.8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm5.7-2.13c-.38-1.16-1.2-2.2-2.3-3.05.38-.5.97-.82 1.6-.82 1.1 0 2 .9 2 2 0 .84-.53 1.57-1.3 1.87z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+</div>
+
+            </div>
+          </div>
+          
+          
+        </article>
+      </div>
+
+      
+      
+      
+      
+    </div>
+  </section>
+
+    </main>
+
+    
+    <footer class="bg-light dark:bg-darkmode-light">
+  <div class="container">
+    <div class="row items-center py-10">
+      <div class="lg:col-3 mb-8 text-center lg:mb-0 lg:text-left">
+        
+        <a
+          class="navbar-brand inline-block"
+          href="/">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  Shreyas Mishra
+
+
+        </a>
+      </div>
+      <div class="lg:col-6 mb-8 text-center lg:mb-0">
+        <ul>
+          
+        </ul>
+      </div>
+      <div class="lg:col-3 mb-8 text-center lg:mb-0 lg:mt-0 lg:text-right">
+        <ul class="social-icons">
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="twitter"
+                rel="nofollow noopener"
+                href="https://x.com/Shreyas_Mishra1/">
+                <i class="fab fa-twitter"></i>
+              </a>
+            </li>
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="github"
+                rel="nofollow noopener"
+                href="http://github.com/Shreyas220">
+                <i class="fab fa-github"></i>
+              </a>
+            </li>
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="linkedin"
+                rel="nofollow noopener"
+                href="https://www.linkedin.com/in/shreyasmishra1/">
+                <i class="fab fa-linkedin"></i>
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="border-border dark:border-darkmode-border border-t py-7">
+    <div
+      class="text-text-light dark:text-darkmode-text-light container text-center">
+      <p>
+        Designed &amp; Developed by <a href="https://zeon.studio"
+
+
+
+
+ target="_blank"
+ 
+
+
+>Zeon Studio</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+
+
+    
+    
+
+
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+<script
+  crossorigin="anonymous"
+  integrity=""
+  src="/js/script.js"></script>
+
+
+<script
+  defer
+  async
+  crossorigin="anonymous"
+  integrity=""
+  src="/js/script-lazy.js"></script>
+
+
+
+<script>
+  if ('serviceWorker' in navigator){navigator.serviceWorker.register("/service-worker.js");}
+</script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  </body>
+</html>

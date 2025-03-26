@@ -1,0 +1,1454 @@
+<!doctype html>
+<html
+  itemscope
+  class=""
+  lang="en-us"
+  itemtype="http://schema.org/WebPage">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+    <meta charset="utf-8" />
+
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=5" />
+
+
+<meta name="theme-name" content="hugoplate" />
+
+
+
+
+
+
+
+
+
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta
+  name="msapplication-TileColor"
+  content="#ddd" />
+<meta
+  name="theme-color"
+  content="#ffffff" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <base href="//localhost:1313/blog/tokio/" />
+
+
+
+
+
+
+
+  
+
+
+<title>Rust: Tokio under the hood</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <meta
+    name="keywords"
+    content="Boilerplate, Hugo" />
+
+
+
+
+<meta
+  name="description"
+  content="Understanding Fault Tolerance in Streaming Systems " />
+
+
+
+  <meta name="author" content="zeon.studio" />
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+
+
+  
+  
+    
+    
+      
+    
+
+    
+
+
+    
+    
+
+
+    
+    
+      
+      
+      
+        <meta property="og:image" content="//localhost:1313/images/tokio_day.png" />
+        <meta name="twitter:image" content="//localhost:1313/images/tokio_day.png" />
+        <meta
+          name="twitter:card"
+          content="summary_large_image" />
+      
+      
+      <meta property="og:image:width" content="1536" />
+      <meta property="og:image:height" content="1024" />
+    
+
+
+    
+    <meta
+      property="og:image:type"
+      content="image/.png" />
+  
+
+
+  
+
+
+
+
+
+<meta property="og:title" content="Rust: Tokio under the hood" />
+<meta property="og:description" content="Understanding Fault Tolerance in Streaming Systems " />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="//localhost:1313/blog/tokio/" />
+
+
+<meta name="twitter:title" content="Rust: Tokio under the hood" />
+<meta name="twitter:description" content="Understanding Fault Tolerance in Streaming Systems " />
+
+
+  <meta name="twitter:site" content="@zeon_studio" />
+
+
+  <meta name="twitter:creator" content="@zeon.studio" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  let indexURL = "//localhost:1313/searchindex.json";
+  let includeSectionsInSearch = ["blog"];
+  let search_no_results = "No results for";
+  let search_initial_message = "Type something to search..";
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+<meta http-equiv="x-dns-prefetch-control" content="on" />
+<link rel="preconnect" href="https://use.fontawesome.com" crossorigin />
+<link rel="preconnect" href="//cdnjs.cloudflare.com" />
+<link rel="preconnect" href="//www.googletagmanager.com" />
+<link rel="preconnect" href="//www.google-analytics.com" />
+<link rel="dns-prefetch" href="https://use.fontawesome.com" />
+<link rel="dns-prefetch" href="//ajax.googleapis.com" />
+<link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+<link rel="dns-prefetch" href="//www.googletagmanager.com" />
+<link rel="dns-prefetch" href="//www.google-analytics.com" />
+<link rel="dns-prefetch" href="//fonts.googleapis.com" />
+<link rel="dns-prefetch" href="//connect.facebook.net" />
+<link rel="dns-prefetch" href="//platform.linkedin.com" />
+<link rel="dns-prefetch" href="//platform.twitter.com" />
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<script>
+  (function () {
+    const googleFont = document.createElement("link");
+    googleFont.href = "https://fonts.googleapis.com/css2?family=Heebo:wght@400;600&family=Signika:wght@500;700&display=swap";
+    googleFont.type = "text/css";
+    googleFont.rel = "stylesheet";
+    document.head.appendChild(googleFont);
+  })();
+</script>
+
+
+
+
+
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link
+  href="/css/style.css"
+  integrity=""
+  rel="stylesheet" />
+
+
+<link
+  defer
+  async
+  rel="stylesheet"
+  href="/css/style-lazy.css"
+  integrity=""
+  media="print"
+  onload="this.media='all'; this.onload=null;" />
+
+
+  </head>
+
+  <body>
+    
+    
+      
+
+
+
+
+
+      
+      <div
+  class="fixed left-0 top-0 z-50 flex w-[30px] items-center justify-center bg-gray-200 py-[2.5px] text-[12px] uppercase text-black sm:bg-red-200 md:bg-yellow-200 lg:bg-green-200 xl:bg-blue-200 2xl:bg-pink-200">
+  <span class="block sm:hidden">all</span>
+  <span class="hidden sm:block md:hidden">sm</span>
+  <span class="hidden md:block lg:hidden">md</span>
+  <span class="hidden lg:block xl:hidden">lg</span>
+  <span class="hidden xl:block 2xl:hidden">xl</span>
+  <span class="hidden 2xl:block">2xl</span>
+</div>
+
+    
+
+
+    
+    
+
+
+
+
+
+    
+    <header
+  class="header  z-30">
+  <nav class="navbar container">
+    
+    <div class="order-0">
+      
+      <a class="navbar-brand block" href="/">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  Shreyas Mishra
+
+
+      </a>
+    </div>
+    
+    <input id="nav-toggle" type="checkbox" class="hidden" />
+    <label
+      for="nav-toggle"
+      class="order-3 cursor-pointer flex items-center lg:hidden text-text-dark dark:text-white lg:order-1">
+      <svg id="show-button" class="h-6 fill-current block" viewBox="0 0 20 20">
+        <title>Menu Open</title>
+        <path d="M0 3h20v2H0V3z m0 6h20v2H0V9z m0 6h20v2H0V0z"></path>
+      </svg>
+      <svg id="hide-button" class="h-6 fill-current hidden" viewBox="0 0 20 20">
+        <title>Menu Close</title>
+        <polygon
+          points="11 9 22 9 22 11 11 11 11 22 9 22 9 11 -2 11 -2 9 9 9 9 -2 11 -2"
+          transform="rotate(45 10 10)"></polygon>
+      </svg>
+    </label>
+    
+
+    
+    <ul
+      id="nav-menu"
+      class="navbar-nav order-3 hidden lg:flex w-full pb-6 lg:order-1 lg:w-auto lg:space-x-2 lg:pb-0 xl:space-x-8">
+      
+      
+        
+        
+        
+        
+          <li class="nav-item">
+            <a
+              class="nav-link "
+              
+              href="/about"
+              >About</a
+            >
+          </li>
+        
+      
+        
+        
+        
+        
+          <li class="nav-item">
+            <a
+              class="nav-link "
+              
+              href="/blog"
+              >Blog</a
+            >
+          </li>
+        
+      
+      
+    </ul>
+
+    <div class="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
+      
+
+      
+
+      
+
+
+  <div class="theme-switcher mr-5 hidden">
+    <input id="theme-switcher" data-theme-switcher type="checkbox" />
+    <label for="theme-switcher">
+      <span class="sr-only">theme switcher</span>
+      <span>
+        
+        <svg
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 opacity-100 dark:opacity-0"
+          viewBox="0 0 56 56"
+          fill="#fff"
+          height="16"
+          width="16">
+          <path
+            d="M30 4.6c0-1-.9-2-2-2a2 2 0 0 0-2 2v5c0 1 .9 2 2 2s2-1 2-2Zm9.6 9a2 2 0 0 0 0 2.8c.8.8 2 .8 2.9 0L46 13a2 2 0 0 0 0-2.9 2 2 0 0 0-3 0Zm-26 2.8c.7.8 2 .8 2.8 0 .8-.7.8-2 0-2.9L13 10c-.7-.7-2-.8-2.9 0-.7.8-.7 2.1 0 3ZM28 16a12 12 0 0 0-12 12 12 12 0 0 0 12 12 12 12 0 0 0 12-12 12 12 0 0 0-12-12Zm23.3 14c1.1 0 2-.9 2-2s-.9-2-2-2h-4.9a2 2 0 0 0-2 2c0 1.1 1 2 2 2ZM4.7 26a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4.9c1 0 2-.9 2-2s-1-2-2-2Zm37.8 13.6a2 2 0 0 0-3 0 2 2 0 0 0 0 2.9l3.6 3.5a2 2 0 0 0 2.9 0c.8-.8.8-2.1 0-3ZM10 43.1a2 2 0 0 0 0 2.9c.8.7 2.1.8 3 0l3.4-3.5c.8-.8.8-2.1 0-2.9-.8-.8-2-.8-2.9 0Zm20 3.4c0-1.1-.9-2-2-2a2 2 0 0 0-2 2v4.9c0 1 .9 2 2 2s2-1 2-2Z" />
+        </svg>
+        
+        <svg
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 opacity-0 dark:opacity-100"
+          viewBox="0 0 24 24"
+          fill="none"
+          height="16"
+          width="16">
+          <path
+            fill="#000"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M8.2 2.2c1-.4 2 .6 1.6 1.5-1 3-.4 6.4 1.8 8.7a8.4 8.4 0 0 0 8.7 1.8c1-.3 2 .5 1.5 1.5v.1a10.3 10.3 0 0 1-9.4 6.2A10.3 10.3 0 0 1 3.2 6.7c1-2 2.9-3.5 4.9-4.4Z" />
+        </svg>
+      </span>
+    </label>
+  </div>
+
+  
+  <script>
+    var darkMode = false;
+
+    
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches){darkMode = true}
+    
+
+    if (localStorage.getItem("theme") === "dark"){darkMode = true}
+    else if (localStorage.getItem("theme") === "light"){darkMode = false}
+
+    if (darkMode){document.documentElement.classList.add("dark")}
+    else {document.documentElement.classList.remove("dark")}
+
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      var themeSwitch = document.querySelectorAll("[data-theme-switcher]");
+      var themeSwitcherContainer = document.querySelector('.theme-switcher');
+
+      [].forEach.call(themeSwitch, function (ts) {
+        ts.checked = darkMode;
+        ts.addEventListener("click", () => {
+          document.documentElement.classList.toggle("dark");
+          localStorage.setItem(
+            "theme",
+            document.documentElement.classList.contains("dark") ? "dark" : "light"
+          );
+        });
+      });
+
+      
+      themeSwitcherContainer.classList.remove('hidden');
+    });
+  </script>
+
+
+
+
+      
+      
+    </div>
+  </nav>
+</header>
+
+    
+
+
+
+
+
+
+
+    <main>
+      
+  <section class="section pt-7">
+    <div class="container">
+      <div class="row justify-center">
+        <article class="lg:col-10">
+          
+          
+            <div class="mb-10">
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  
+    
+      
+    
+
+
+    
+    
+
+
+    
+    
+      
+      
+    
+    
+    
+
+
+    
+    
+      
+      
+        
+
+        
+        
+        
+        
+        
+        
+        
+
+
+        
+        
+
+
+        <picture>
+          <source
+            
+              srcset="/images/tokio_day_hu_67122288fb061ddc.webp"
+            
+            media="(max-width: 575px)" />
+          <source
+            
+              srcset="/images/tokio_day_hu_cb3f0a6b95d935fb.webp"
+            
+            media="(max-width: 767px)" />
+          <source
+            
+              srcset="/images/tokio_day_hu_dedc239034565238.webp"
+            
+            media="(max-width: 991px)" />
+          <source
+            
+              srcset="/images/tokio_day_hu_5c20b06ca91212d9.webp"
+             />
+          <img
+            
+              loading="lazy" decoding="async"
+              src="/images/tokio_day_hu_8beb8c851a88e9b1.png"
+            class=" w-full rounded img"
+            alt="Rust: Tokio under the hood"
+            width="1536"
+            height="1024" />
+        </picture>
+      
+      
+    
+    
+  
+
+
+  
+
+
+            </div>
+          
+          <h1 class="h2 mb-4">
+            Rust: Tokio under the hood
+          </h1>
+          <ul class="mb-4">
+            <li class="mr-4 inline-block">
+              <a
+                href="/authors/shreyas-mishra/">
+                <i class="fa-regular fa-circle-user mr-2"></i
+                >Shreyas Mishra
+              </a>
+            </li>
+            
+            
+              <li class="mr-4 inline-block">
+                <i class="fa-regular fa-folder mr-2"></i>
+                
+                  <a
+                    href="/categories/rust/"
+                    class=""
+                    >Rust
+                      ,
+                    
+                  </a>
+                
+                  <a
+                    href="/categories/async/"
+                    class=""
+                    >Async
+                  </a>
+                
+              </li>
+            
+            <li class="mr-4 inline-block">
+              <i class="fa-regular fa-clock mr-2"></i>
+              March 25, 2025
+            </li>
+          </ul>
+          <div class="content mb-10">
+            
+
+ 
+  
+
+<details open class="table-of-content blog">
+  <summary>
+    
+      Table of Contents
+    
+  </summary>
+  <nav id="TableOfContents">
+  <ol>
+    <li><a href="#rusts-asynchronous-programming-foundation">Rust&rsquo;s Asynchronous Programming Foundation</a>
+      <ol>
+        <li><a href="#futures-in-rust">Futures in Rust</a></li>
+      </ol>
+    </li>
+    <li><a href="#what-is-tokio-and-why-do-we-need-it">What is Tokio and Why Do We Need It?</a></li>
+    <li><a href="#tokio-under-the-hood">Tokio Under the Hood</a>
+      <ol>
+        <li><a href="#the-reactor-pattern">The Reactor Pattern</a></li>
+        <li><a href="#the-scheduler">The Scheduler</a></li>
+        <li><a href="#from-io-interest-to-task-wakeup">From I/O Interest to Task Wakeup</a></li>
+        <li><a href="#task-implementation">Task Implementation</a></li>
+      </ol>
+    </li>
+    <li><a href="#the-runtime-components">The Runtime Components</a>
+      <ol>
+        <li><a href="#1-driver-system">1. Driver System</a></li>
+        <li><a href="#2-thread-pool">2. Thread Pool</a></li>
+        <li><a href="#3-synchronization-primitives">3. Synchronization Primitives</a></li>
+      </ol>
+    </li>
+    <li><a href="#how-tokio-integrates-with-rusts-asyncawait">How Tokio Integrates with Rust&rsquo;s Async/Await</a></li>
+    <li><a href="#practical-example-tracing-a-request-through-tokio">Practical Example: Tracing a Request Through Tokio</a></li>
+    <li><a href="#advanced-tokio-features">Advanced Tokio Features</a>
+      <ol>
+        <li><a href="#runtime-configuration">Runtime Configuration</a></li>
+        <li><a href="#cooperative-scheduling">Cooperative Scheduling</a></li>
+        <li><a href="#resource-limits">Resource Limits</a></li>
+      </ol>
+    </li>
+    <li><a href="#the-evolution-of-tokio">The Evolution of Tokio</a></li>
+    <li><a href="#conclusion">Conclusion</a>
+      <ol>
+        <li><a href="#image">Image</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+</details>
+
+            <h1 id="understanding-tokio-rusts-asynchronous-runtime">Understanding Tokio: Rust&rsquo;s Asynchronous Runtime</h1>
+<p>Asynchronous programming has become essential for building efficient, high-performance applications. In the Rust ecosystem, Tokio stands as the most popular asynchronous runtime. But what exactly is Tokio, and how does it work under the hood? Let&rsquo;s dive deep into Tokio&rsquo;s internals and explore how it connects to Rust&rsquo;s async programming model.</p>
+<h2 id="rusts-asynchronous-programming-foundation">Rust&rsquo;s Asynchronous Programming Foundation</h2>
+<p>Before we can understand Tokio, we need to grasp Rust&rsquo;s approach to asynchronous programming. Unlike languages with built-in async/await syntax from the beginning, Rust&rsquo;s async story evolved gradually.</p>
+<h3 id="futures-in-rust">Futures in Rust</h3>
+<p>At the core of Rust&rsquo;s async programming is the <code>Future</code> trait. A <code>Future</code> represents a value that might not be ready yet. The simplified version looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">trait</span> Future {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Output</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">poll</span>(self: <span style="color:#a6e22e">Pin</span><span style="color:#f92672">&lt;&amp;</span><span style="color:#66d9ef">mut</span> Self<span style="color:#f92672">&gt;</span>, cx: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> Context<span style="color:#f92672">&lt;</span>&#39;_<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">Poll</span><span style="color:#f92672">&lt;</span>Self::Output<span style="color:#f92672">&gt;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>When we define an <code>async fn</code> or <code>async</code> block in Rust, the compiler transforms it into a state machine that implements the <code>Future</code> trait. This state machine captures:</p>
+<ol>
+<li>The current state of execution</li>
+<li>Local variables that need to persist across <code>.await</code> points</li>
+<li>Logic to resume execution after a pause</li>
+</ol>
+<p>For example, this simple async function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">fetch_data</span>(id: <span style="color:#66d9ef">u32</span>) -&gt; String {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Simulate network request
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    delay_for(Duration::from_millis(<span style="color:#ae81ff">100</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    format!(<span style="color:#e6db74">&#34;Data for id </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, id)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Gets transformed by the compiler into a complex state machine implementing <code>Future</code>. But there&rsquo;s a crucial detail: <strong>Futures in Rust are lazy</strong>. They don&rsquo;t do anything until something actively drives them to completion by repeatedly calling <code>poll()</code>.</p>
+<p>This is where async runtimes like Tokio come in.</p>
+<h2 id="what-is-tokio-and-why-do-we-need-it">What is Tokio and Why Do We Need It?</h2>
+<p>Tokio is an asynchronous runtime for Rust. Its job is to:</p>
+<ol>
+<li>Schedule and execute futures efficiently</li>
+<li>Provide non-blocking I/O operations (network, filesystem)</li>
+<li>Offer utilities for common async patterns (channels, locks, etc.)</li>
+</ol>
+<p>Without a runtime like Tokio, our futures would just sit there doing nothing. The runtime is what brings them to life by driving their execution.</p>
+<h2 id="tokio-under-the-hood">Tokio Under the Hood</h2>
+<p>Now let&rsquo;s explore how Tokio actually works internally.</p>
+<h3 id="the-reactor-pattern">The Reactor Pattern</h3>
+<p>At Tokio&rsquo;s core lies an event-driven architecture based on the reactor pattern. The reactor is responsible for:</p>
+<ol>
+<li>Registering interest in I/O events (like &ldquo;socket is readable&rdquo; or &ldquo;file is writable&rdquo;)</li>
+<li>Efficiently waiting for these events using OS primitives like <code>epoll</code> (Linux), <code>kqueue</code> (BSD/macOS), or <code>IOCP</code> (Windows)</li>
+<li>Dispatching events to the appropriate handlers when they occur</li>
+</ol>
+<p>This is how Tokio achieves non-blocking I/O without wasting CPU cycles on busy waiting.</p>
+<h3 id="the-scheduler">The Scheduler</h3>
+<p>Tokio&rsquo;s scheduler is responsible for managing the execution of tasks (which are essentially top-level futures). The scheduler:</p>
+<ol>
+<li>Maintains queues of tasks that are ready to make progress</li>
+<li>Distributes these tasks across worker threads for execution</li>
+<li>Ensures fair execution time among tasks to prevent starvation</li>
+</ol>
+<p>Tokio offers two main scheduler types:</p>
+<ul>
+<li><strong>Multi-thread scheduler</strong>: Distributes tasks across a thread pool for parallel execution (default)</li>
+<li><strong>Current-thread scheduler</strong>: Runs all tasks on the current thread, useful for more constrained environments</li>
+</ul>
+<h3 id="from-io-interest-to-task-wakeup">From I/O Interest to Task Wakeup</h3>
+<p>Let&rsquo;s trace what happens when a task performs I/O:</p>
+<ol>
+<li>A task attempts to read from a socket by calling <code>.await</code> on a read future</li>
+<li>If data isn&rsquo;t available, the read future registers interest in &ldquo;socket readable&rdquo; with the reactor</li>
+<li>The task is suspended, and control returns to the scheduler</li>
+<li>When data arrives, the OS notifies Tokio&rsquo;s reactor</li>
+<li>The reactor triggers a &ldquo;wakeup&rdquo; for the suspended task</li>
+<li>The task is placed back in the scheduler&rsquo;s queue</li>
+<li>When the scheduler gives the task execution time again, it resumes from where it left off</li>
+</ol>
+<p>This cycle allows Tokio to efficiently handle thousands of connections with a small number of threads.</p>
+<h3 id="task-implementation">Task Implementation</h3>
+<p>A Tokio task is essentially a <code>Future</code> that&rsquo;s been wrapped with additional metadata and scheduling capabilities. When you call <code>tokio::spawn()</code>, Tokio:</p>
+<ol>
+<li>Wraps your future in a <code>Task</code> structure</li>
+<li>Assigns it a unique ID</li>
+<li>Adds information for scheduling and cancellation</li>
+<li>Places it in the appropriate queue for execution</li>
+</ol>
+<p>Tasks in Tokio are very lightweight (unlike OS threads), so you can create thousands or even millions of them without significant overhead.</p>
+<h2 id="the-runtime-components">The Runtime Components</h2>
+<p>Tokio&rsquo;s runtime consists of several key components:</p>
+<h3 id="1-driver-system">1. Driver System</h3>
+<p>Tokio has different &ldquo;drivers&rdquo; for various I/O types:</p>
+<ul>
+<li><strong>I/O Driver</strong>: Handles network and file I/O using the reactor pattern</li>
+<li><strong>Time Driver</strong>: Manages timers and delays efficiently</li>
+<li><strong>Signal Driver</strong>: Processes OS signals</li>
+</ul>
+<p>These drivers register with the OS for events and communicate with the scheduler when events occur.</p>
+<h3 id="2-thread-pool">2. Thread Pool</h3>
+<p>The default multi-threaded runtime uses a work-stealing thread pool. This allows:</p>
+<ul>
+<li>Efficient utilization of CPU cores</li>
+<li>Dynamic load balancing across threads</li>
+<li>Lower contention through clever queue design</li>
+</ul>
+<p>The work-stealing algorithm helps ensure that no thread sits idle while there&rsquo;s work to be done.</p>
+<h3 id="3-synchronization-primitives">3. Synchronization Primitives</h3>
+<p>Tokio provides specialized async versions of common synchronization tools:</p>
+<ul>
+<li>Mutex</li>
+<li>RwLock</li>
+<li>Semaphore</li>
+<li>oneshot/mpsc/broadcast channels</li>
+</ul>
+<p>These are carefully designed to work with the async model without blocking threads.</p>
+<h2 id="how-tokio-integrates-with-rusts-asyncawait">How Tokio Integrates with Rust&rsquo;s Async/Await</h2>
+<p>Tokio and Rust&rsquo;s async/await syntax complement each other perfectly:</p>
+<ol>
+<li><strong>Rust&rsquo;s async/await</strong>: Provides the language-level syntax for writing asynchronous code</li>
+<li><strong>Tokio</strong>: Provides the runtime that executes this code</li>
+</ol>
+<p>When you write:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[tokio::main]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> result <span style="color:#f92672">=</span> tokio::spawn(<span style="color:#66d9ef">async</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Some async work
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#e6db74">&#34;Hello from task!&#34;</span>
+</span></span><span style="display:flex;"><span>    }).<span style="color:#66d9ef">await</span>.unwrap();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, result);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Here&rsquo;s what&rsquo;s happening:</p>
+<ol>
+<li>The <code>#[tokio::main]</code> macro sets up the Tokio runtime and transforms your async main into a regular main that initializes the runtime</li>
+<li><code>tokio::spawn</code> submits your future to Tokio&rsquo;s scheduler as a task</li>
+<li>The runtime drives execution of the task until completion</li>
+<li>The <code>.await</code> on the join handle suspends the main task until the spawned task completes</li>
+</ol>
+<h2 id="practical-example-tracing-a-request-through-tokio">Practical Example: Tracing a Request Through Tokio</h2>
+<p>Let&rsquo;s trace what happens when a simple HTTP server built with Tokio processes a request:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> tokio::net::{TcpListener, TcpStream};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> tokio::io::{AsyncReadExt, AsyncWriteExt};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[tokio::main]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; Result<span style="color:#f92672">&lt;</span>(), Box<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">dyn</span> std::error::Error<span style="color:#f92672">&gt;&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Bind the listener to the address
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> listener <span style="color:#f92672">=</span> TcpListener::bind(<span style="color:#e6db74">&#34;127.0.0.1:8080&#34;</span>).<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Listen for incoming connections
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> (socket, _) <span style="color:#f92672">=</span> listener.accept().<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Spawn a new task for each connection
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        tokio::spawn(<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">move</span> {
+</span></span><span style="display:flex;"><span>            handle_connection(socket).<span style="color:#66d9ef">await</span>
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">handle_connection</span>(<span style="color:#66d9ef">mut</span> socket: <span style="color:#a6e22e">TcpStream</span>) -&gt; Result<span style="color:#f92672">&lt;</span>(), Box<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">dyn</span> std::error::Error<span style="color:#f92672">&gt;&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buffer <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span>; <span style="color:#ae81ff">1024</span>];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Read data from the socket
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> n <span style="color:#f92672">=</span> socket.read(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> buffer).<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Write response back to the client
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> response <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;HTTP/1.1 200 OK</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Content-Length: 12</span><span style="color:#ae81ff">\r\n\r\n</span><span style="color:#e6db74">Hello world!&#34;</span>;
+</span></span><span style="display:flex;"><span>    socket.write_all(response).<span style="color:#66d9ef">await</span><span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    Ok(())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The execution flow is:</p>
+<ol>
+<li><strong>Runtime Initialization</strong>: The <code>#[tokio::main]</code> macro initializes the multi-threaded runtime</li>
+<li><strong>Listening</strong>: <code>TcpListener::bind().await</code> registers interest in connection events with the OS</li>
+<li><strong>Accepting</strong>: <code>listener.accept().await</code> suspends until a client connects</li>
+<li><strong>Task Creation</strong>: When a connection arrives, <code>tokio::spawn</code> creates a new task</li>
+<li><strong>Reading</strong>: <code>socket.read().await</code> registers interest in &ldquo;socket readable&rdquo; and suspends</li>
+<li><strong>Writing</strong>: <code>socket.write_all().await</code> registers interest in &ldquo;socket writable&rdquo; and suspends</li>
+<li><strong>Completion</strong>: When the response is fully written, the task completes and is dropped</li>
+</ol>
+<p>All of this happens without any thread blocking, allowing the server to handle thousands of concurrent connections with minimal resources.</p>
+<h2 id="advanced-tokio-features">Advanced Tokio Features</h2>
+<h3 id="runtime-configuration">Runtime Configuration</h3>
+<p>Tokio allows fine-tuning the runtime through its builder API:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> runtime <span style="color:#f92672">=</span> tokio::runtime::Builder::new_multi_thread()
+</span></span><span style="display:flex;"><span>    .worker_threads(<span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>    .enable_io()
+</span></span><span style="display:flex;"><span>    .enable_time()
+</span></span><span style="display:flex;"><span>    .build()
+</span></span><span style="display:flex;"><span>    .unwrap();
+</span></span></code></pre></div><p>This lets you control thread count, which drivers to enable, and other parameters.</p>
+<h3 id="cooperative-scheduling">Cooperative Scheduling</h3>
+<p>Tokio implements cooperative scheduling, where tasks voluntarily yield execution. This happens automatically at <code>.await</code> points. For CPU-intensive tasks with no natural <code>.await</code> points, you can manually yield with:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>tokio::task::yield_now().<span style="color:#66d9ef">await</span>;
+</span></span></code></pre></div><h3 id="resource-limits">Resource Limits</h3>
+<p>Tokio provides tools to prevent resource exhaustion:</p>
+<ul>
+<li><code>tokio::sync::Semaphore</code> for limiting concurrent operations</li>
+<li><code>JoinSet</code> for managing collections of tasks</li>
+<li>Resource limiters in libraries built on Tokio (like Hyper&rsquo;s connection limits)</li>
+</ul>
+<h2 id="the-evolution-of-tokio">The Evolution of Tokio</h2>
+<p>Tokio wasn&rsquo;t always what it is today. It evolved alongside Rust&rsquo;s async story:</p>
+<ol>
+<li><strong>Pre-async/await Tokio</strong>: Used futures 0.1 with more verbose combinators</li>
+<li><strong>Tokio 0.2</strong>: Redesigned for the async/await syntax</li>
+<li><strong>Tokio 1.0</strong>: Stabilized API with strong backwards compatibility guarantees</li>
+<li><strong>Current Tokio</strong>: Continuous performance improvements and feature additions</li>
+</ol>
+<p>This evolution reflects the maturing of Rust&rsquo;s async ecosystem.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Tokio&rsquo;s power comes from its thoughtful design that integrates deeply with Rust&rsquo;s async programming model. Under the hood, it&rsquo;s a sophisticated system of event notification, efficient scheduling, and task management that allows developers to write high-performance, concurrent applications without the traditional complexity.</p>
+<p>The beauty of Tokio is that while there&rsquo;s incredible complexity underneath, the developer experience remains straightforward. You can start with simple async functions and gradually learn more advanced patterns as needed.</p>
+<p>If you&rsquo;re diving into asynchronous Rust, taking the time to understand how Tokio works internally will pay dividends in your ability to write efficient, correct async code. Happy coding!</p>
+<h3 id="image">Image</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+  
+  
+
+
+  
+  
+    
+    
+      
+    
+
+    
+
+
+    
+    
+
+
+    
+    
+    
+    
+      
+      
+    
+    
+    
+    
+
+
+    
+    
+      
+      
+
+      
+        
+        
+      
+
+
+      
+
+      
+      
+        
+        
+        
+      
+      
+      
+      
+
+    
+    
+
+    
+    
+      
+      
+          <img
+            title="image title"
+            loading="lazy"
+            decoding="async"
+            class="img img-fluid img-center"
+            width="1536"
+            height="1024"
+            src="/images/tokio_hu_703a24e9fd5ee490.png"
+            alt="alter-text"
+            onerror="this.onerror='null';this.src='\/images\/tokio_hu_703a24e9fd5ee490.png'" />
+      
+    
+
+  
+  
+
+
+
+
+
+
+
+
+          </div>
+          <div class="row items-start justify-between">
+            
+            
+              <div class="lg:col-6 mb-10 flex items-center lg:mb-0">
+                <h5 class="mr-3">Tags :</h5>
+                <ul>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/rust/">
+                        Rust
+                      </a>
+                    </li>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/async/">
+                        Async
+                      </a>
+                    </li>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/tokio/">
+                        Tokio
+                      </a>
+                    </li>
+                  
+                </ul>
+              </div>
+            
+            <div class="lg:col-6 flex items-center">
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="share-icons lg:ml-auto">
+  <h5 class="share-title">Share :</h5>
+
+
+  
+  
+    <a
+      class="share-link share-facebook"
+      href="https://facebook.com/sharer/sharer.php?u=%2f%2flocalhost%3a1313%2fblog%2ftokio%2f"
+      target="_blank"
+      rel="noopener"
+      aria-label="share facebook">
+      <span class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-twitter"
+      href="https://twitter.com/intent/tweet/?text=Share&amp;url=%2f%2flocalhost%3a1313%2fblog%2ftokio%2f"
+      target="_blank"
+      rel="noopener"
+      aria-label="share twitter">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path 
+            d="M8 2H1l8.26 11.015L1.45 22H4.1l6.388-7.349L16 22h7l-8.608-11.478L21.8 2h-2.65l-5.986 6.886zm9 18L5 4h2l12 16z"/>
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-email"
+      href="mailto:?subject=Share&amp;body=%2f%2flocalhost%3a1313%2fblog%2ftokio%2f"
+      target="_self"
+      rel="noopener"
+      aria-label="share email">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.25 14.43l-3.5 2c-.08.05-.17.07-.25.07-.17 0-.34-.1-.43-.25-.14-.24-.06-.55.18-.68l3.5-2c.24-.14.55-.06.68.18.14.24.06.55-.18.68zm4.75.07c-.1 0-.2-.03-.27-.08l-8.5-5.5c-.23-.15-.3-.46-.15-.7.15-.22.46-.3.7-.14L12 13.4l8.23-5.32c.23-.15.54-.08.7.15.14.23.07.54-.16.7l-8.5 5.5c-.08.04-.17.07-.27.07zm8.93 1.75c-.1.16-.26.25-.43.25-.08 0-.17-.02-.25-.07l-3.5-2c-.24-.13-.32-.44-.18-.68s.44-.32.68-.18l3.5 2c.24.13.32.44.18.68z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-reddit"
+      href="https://reddit.com/submit/?url=%2f%2flocalhost%3a1313%2fblog%2ftokio%2f&amp;resubmit=true&amp;title=Share"
+      target="_blank"
+      rel="noopener"
+      aria-label="share reddit">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M24 11.5c0-1.65-1.35-3-3-3-.96 0-1.86.48-2.42 1.24-1.64-1-3.75-1.64-6.07-1.72.08-1.1.4-3.05 1.52-3.7.72-.4 1.73-.24 3 .5C17.2 6.3 18.46 7.5 20 7.5c1.65 0 3-1.35 3-3s-1.35-3-3-3c-1.38 0-2.54.94-2.88 2.22-1.43-.72-2.64-.8-3.6-.25-1.64.94-1.95 3.47-2 4.55-2.33.08-4.45.7-6.1 1.72C4.86 8.98 3.96 8.5 3 8.5c-1.65 0-3 1.35-3 3 0 1.32.84 2.44 2.05 2.84-.03.22-.05.44-.05.66 0 3.86 4.5 7 10 7s10-3.14 10-7c0-.22-.02-.44-.05-.66 1.2-.4 2.05-1.54 2.05-2.84zM2.3 13.37C1.5 13.07 1 12.35 1 11.5c0-1.1.9-2 2-2 .64 0 1.22.32 1.6.82-1.1.85-1.92 1.9-2.3 3.05zm3.7.13c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9.8 4.8c-1.08.63-2.42.96-3.8.96-1.4 0-2.74-.34-3.8-.95-.24-.13-.32-.44-.2-.68.15-.24.46-.32.7-.18 1.83 1.06 4.76 1.06 6.6 0 .23-.13.53-.05.67.2.14.23.06.54-.18.67zm.2-2.8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm5.7-2.13c-.38-1.16-1.2-2.2-2.3-3.05.38-.5.97-.82 1.6-.82 1.1 0 2 .9 2 2 0 .84-.53 1.57-1.3 1.87z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+</div>
+
+            </div>
+          </div>
+          
+          
+        </article>
+      </div>
+
+      
+      
+      
+      
+    </div>
+  </section>
+
+    </main>
+
+    
+    <footer class="bg-light dark:bg-darkmode-light">
+  <div class="container">
+    <div class="row items-center py-10">
+      <div class="lg:col-3 mb-8 text-center lg:mb-0 lg:text-left">
+        
+        <a
+          class="navbar-brand inline-block"
+          href="/">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  Shreyas Mishra
+
+
+        </a>
+      </div>
+      <div class="lg:col-6 mb-8 text-center lg:mb-0">
+        <ul>
+          
+        </ul>
+      </div>
+      <div class="lg:col-3 mb-8 text-center lg:mb-0 lg:mt-0 lg:text-right">
+        <ul class="social-icons">
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="twitter"
+                rel="nofollow noopener"
+                href="https://x.com/Shreyas_Mishra1/">
+                <i class="fab fa-twitter"></i>
+              </a>
+            </li>
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="github"
+                rel="nofollow noopener"
+                href="http://github.com/Shreyas220">
+                <i class="fab fa-github"></i>
+              </a>
+            </li>
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="linkedin"
+                rel="nofollow noopener"
+                href="https://www.linkedin.com/in/shreyasmishra1/">
+                <i class="fab fa-linkedin"></i>
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="border-border dark:border-darkmode-border border-t py-7">
+    <div
+      class="text-text-light dark:text-darkmode-text-light container text-center">
+      <p>
+        Designed &amp; Developed by <a href="https://zeon.studio"
+
+
+
+
+ target="_blank"
+ 
+
+
+>Zeon Studio</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+
+
+    
+    
+
+
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+<script
+  crossorigin="anonymous"
+  integrity=""
+  src="/js/script.js"></script>
+
+
+<script
+  defer
+  async
+  crossorigin="anonymous"
+  integrity=""
+  src="/js/script-lazy.js"></script>
+
+
+
+<script>
+  if ('serviceWorker' in navigator){navigator.serviceWorker.register("/service-worker.js");}
+</script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  </body>
+</html>

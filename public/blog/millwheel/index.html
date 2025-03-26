@@ -142,22 +142,22 @@
       
       
       
-        <meta property="og:image" content="//localhost:1313/images/millwheel.jpg" />
-        <meta name="twitter:image" content="//localhost:1313/images/millwheel.jpg" />
+        <meta property="og:image" content="//localhost:1313/images/millwheel1.png" />
+        <meta name="twitter:image" content="//localhost:1313/images/millwheel1.png" />
         <meta
           name="twitter:card"
           content="summary_large_image" />
       
       
-      <meta property="og:image:width" content="1024" />
-      <meta property="og:image:height" content="768" />
+      <meta property="og:image:width" content="1536" />
+      <meta property="og:image:height" content="1024" />
     
 
 
     
     <meta
       property="og:image:type"
-      content="image/.jpg" />
+      content="image/.png" />
   
 
 
@@ -630,31 +630,31 @@
         <picture>
           <source
             
-              srcset="/images/millwheel_hu_647112a067716cb5.webp"
+              srcset="/images/millwheel1_hu_da579a98144554b4.webp"
             
             media="(max-width: 575px)" />
           <source
             
-              srcset="/images/millwheel_hu_9ff59e513d5ece59.webp"
+              srcset="/images/millwheel1_hu_2206a8213795af2f.webp"
             
             media="(max-width: 767px)" />
           <source
             
-              srcset="/images/millwheel_hu_64f0ad6c2e9cf87f.webp"
+              srcset="/images/millwheel1_hu_4c0ef773ae515163.webp"
             
             media="(max-width: 991px)" />
           <source
             
-              srcset="/images/millwheel_hu_f938eda692e0a5da.webp"
+              srcset="/images/millwheel1_hu_fb4ee5acdcdfbebc.webp"
              />
           <img
             
               loading="lazy" decoding="async"
-              src="/images/millwheel_hu_e33fa5f26dc183e6.jpg"
+              src="/images/millwheel1_hu_437c900303d6e324.png"
             class=" w-full rounded img"
             alt="Fault tolerance in MillWheels"
-            width="1024"
-            height="768" />
+            width="1536"
+            height="1024" />
         </picture>
       
       
@@ -722,7 +722,7 @@
     <li><a href="#introduction">Introduction</a></li>
     <li><a href="#millwheels-fault-tolerance-mechanism">MillWheel’s Fault Tolerance Mechanism</a>
       <ol>
-        <li><a href="#commits">Commits</a>
+        <li><a href="#checkpoint-commits">Checkpoint commits</a>
           <ol>
             <li><a href="#two-types-of-state-for-a-node">Two Types of State for a node</a>
               <ol>
@@ -737,14 +737,16 @@
     </li>
     <li><a href="#lets-try-to-understand-this-with-an-example">Lets try to understand this with an example</a>
       <ol>
-        <li><a href="#failure-scenario">Failure Scenario</a></li>
-        <li><a href="#recovery-process-in-detail">Recovery Process in Detail</a>
+        <li>
           <ol>
-            <li><a href="#1-failure-detection">1. Failure Detection</a></li>
-            <li><a href="#2-state-recovery">2. State Recovery</a></li>
-            <li><a href="#3-message-replay-and-deduplication">3. Message Replay and Deduplication</a></li>
-            <li><a href="#4-exactly-once-guarantee-implementation">4. Exactly-Once Guarantee Implementation</a></li>
-            <li><a href="#5-maintaining-consistency-during-recovery">5. Maintaining Consistency During Recovery</a></li>
+            <li>
+              <ol>
+                <li><a href="#1-noticing-somethings-wrong">1. Noticing Something’s Wrong:</a></li>
+                <li><a href="#2-restarting-and-loading-the-last-checkpoint">2. Restarting and Loading the Last Checkpoint:</a></li>
+                <li><a href="#3-replaying-the-events">3. Replaying the Events:</a></li>
+                <li><a href="#conclusion">conclusion</a></li>
+              </ol>
+            </li>
           </ol>
         </li>
       </ol>
@@ -753,12 +755,10 @@
 </nav>
 </details>
 
-            <p>🚧 Under Construction 🚧</p>
-<h2 id="introduction">Introduction</h2>
-<p>Streaming systems operate under challenging conditions where data flows continuously, errors can occur at any stage, and any downtime may lead to lost or inconsistent information. This makes fault tolerance not just a feature but a necessity for ensuring that systems quickly recover from failures while maintaining state consistency and processing guarantee</p>
-<p>Fault tolerance is a critical requirement for modern streaming systems where data flows continuously and errors can occur at any point in the processing pipeline. Traditional streaming frameworks often struggle with challenges such as message loss, duplicate processing, and state inconsistencies—problems that can lead to unreliable results or significant downtime.</p>
-<p>For example, imagine a real-time system that monitors web queries for sudden trends.</p>
-<p>If a node fails or an edge in the processing graph drops data, the system might miss an emerging trend or, worse, generate false alerts.</p>
+            <h2 id="introduction">Introduction</h2>
+<p>Fault tolerance is super important for modern streaming systems since data is always in transit and failure can happen at any stage of the system. <br>
+We can run into issues like lost messages, processing the same message twice, or keeping track of state properly. This can lead to unreliable results or even system downtime. <br>
+For example, think about a system that monitors web searches to spot sudden trends. If a part of the system fails or some data gets dropped, it might miss a new trend or, even worse, trigger false alerts.</p>
 <h2 id="millwheels-fault-tolerance-mechanism">MillWheel’s Fault Tolerance Mechanism</h2>
 <p>MillWheel addressed these challenges by providing framework-level fault tolerance where any node or edge in the processing graph could fail without affecting the correctness of results, it does it  through a few core mechanisms:</p>
 <ul>
@@ -786,7 +786,7 @@
 <p>Once the changes are committed, the ACKs are sent to the sender so that it stops retrying.</p>
 <p>Only after all processing is complete and the changes are committed does the system send acknowledgments back to senders, signaling that they can stop retrying delivery. The system also intelligently manages these record IDs, keeping them only as long as necessary. Once the system confirms that no more retries will occur (typically after internal senders have completed their retry cycles), it cleans up these duplicate detection records to conserve resources.</p>
 <p>Now let&rsquo;s understand how this commits and recovery from the state system works</p>
-<h3 id="commits">Commits</h3>
+<h3 id="checkpoint-commits">Checkpoint commits</h3>
 <h4 id="two-types-of-state-for-a-node">Two Types of State for a node</h4>
 <h5 id="hard-state">Hard State</h5>
 <pre><code>This is the data that’s permanently stored in a backing store (database or disk). 
@@ -794,8 +794,8 @@
 <h5 id="soft-state">Soft State</h5>
 <pre><code>This includes things kept in memory such as caches or temporary aggregates. 
 </code></pre>
-<p>To enable rapid recovery from failures, MillWheel workers save their current state extremely frequently—sometimes after every second or even after processing each individual record. These frequent checkpoints allow the system to recover quickly by loading the most recent saved state rather than rebuilding from scratch.
-Importantly, MillWheel allows workers to access their saved state without pausing all processing. This concurrent checkpointing and processing enables the system to maintain high throughput even while ensuring fault tolerance.
+<p>MillWheel workers save their current state very often—sometimes every second or even after each record. These frequent checkpoints allow the system to recover quickly by loading the most recent saved state rather than rebuilding from scratch.
+Importantly, MillWheel allows workers to access their saved state without pausing all processing. This concurrent checkpointing and processing enables the system to maintain high throughput even while ensuring fault tolerance.<br>
 To maintain consistency across related pieces of state, MillWheel wraps state updates in atomic operations. This atomicity ensures that all parts of a key&rsquo;s state are updated together, maintaining invariants and preventing partial updates. For instance, if a financial application updates both an account balance and a transaction log, these updates must succeed or fail together to prevent inconsistencies.</p>
 <h3 id="dealing-with-zombie-processes-and-stale-writes">Dealing with “Zombie” Processes and Stale Writes</h3>
 <p>One of the most difficult challenges in distributed streaming systems involves managing &ldquo;zombie&rdquo; processes and preventing stale writes. When work migrates between machines—perhaps because a process failed or due to load rebalancing—there&rsquo;s a risk that an old or &ldquo;zombie&rdquo; process might later send updates that are no longer valid.</p>
@@ -803,70 +803,35 @@ To maintain consistency across related pieces of state, MillWheel wraps state up
 <p>MillWheel solves this through a tokenized write validation system. Each update includes a special token that verifies its validity. When a new process takes over responsibility for a key, it invalidates older tokens, ensuring that only the most current process can update that key.</p>
 <p>Now if Process A (the “zombie”) later tries to update the task with outdated information, the system will ignore it because Process B’s token has already taken over. The system automatically rejects these stale writes, preserving consistency.</p>
 <h2 id="lets-try-to-understand-this-with-an-example">Lets try to understand this with an example</h2>
-<p>Imagine we have a simple pipeline analyzing e-commerce transactions:</p>
+<p>Imagine our streaming system has 4 nodes :</p>
 <ol>
 <li><strong>Source</strong> → Ingests events</li>
 <li><strong>Enrichment</strong> → Adds product details to each event</li>
 <li><strong>Aggregation</strong> → Computes on events</li>
 <li><strong>Alerting</strong> → Sends notifications for unusual patterns</li>
 </ol>
-<p>Let&rsquo;s say the <strong>Aggregation</strong> computation fails in the middle of processing:</p>
-<h3 id="failure-scenario">Failure Scenario</h3>
-<ol>
-<li>A server running the Aggregation computation crashes while processing a batch of 100 events</li>
-<li>The computation had processed 60 events and updated its state accordingly</li>
-<li>40 events were in-flight at the time of failure</li>
-<li>The last state checkpoint happened after processing 50 events</li>
-</ol>
-<h3 id="recovery-process-in-detail">Recovery Process in Detail</h3>
-<h4 id="1-failure-detection">1. Failure Detection</h4>
-<p>The MillWheel system constantly monitors the health of computation instances through periodic heartbeats. When a server fails to respond:</p>
+<p>Now, suppose the part that crunches numbers (the <strong>Aggregation</strong> stage) suddenly crashes. Here&rsquo;s what happened:</p>
 <ul>
-<li>The system marks that computation instance as failed</li>
-<li>In-flight messages to the failed computation are buffered</li>
+<li>The server was working on a batch of 100 transactions.</li>
+<li>It finished 60 transactions before crashing.</li>
+<li>It had saved its progress (a checkpoint) after 60 transactions but did not ACK the Enrichment node for that last 10 messages .</li>
+<li>That means 10 transactions were processed after the checkpoint but not ACK to the previous node, and 40 transactions were still in the middle of being processed when the crash occurred.</li>
 </ul>
-<h4 id="2-state-recovery">2. State Recovery</h4>
-<p>When a new instance is started:</p>
-<p>For our Aggregation example:</p>
+<p><strong>How the system recovers:</strong></p>
+<h5 id="1-noticing-somethings-wrong">1. Noticing Something’s Wrong:</h5>
+<p>The system keeps an eye on all servers. When the aggregation server stops replying, the system marks it as failed and holds onto any messages that were still being processed.</p>
+<h5 id="2-restarting-and-loading-the-last-checkpoint">2. Restarting and Loading the Last Checkpoint:</h5>
+<p>A new server instance starts up and loads the saved state from the checkpoint (which only goes up to 60 transactions).</p>
+<h5 id="3-replaying-the-events">3. Replaying the Events:</h5>
+<p>The system now replays the messages that were lost:</p>
 <ul>
-<li>The new instance loads the state checkpoint containing data for the first 50 events</li>
-<li>The state includes per-category revenue counters and any other metadata</li>
-<li>All timers (like &ldquo;emit daily totals at midnight&rdquo;) are restored</li>
-<li>The system identifies all messages that were sent to the failed instance but not acknowledged as processed</li>
+<li>The new instance loads the state checkpoint containing data for the first 60 events</li>
+<li>It will replay from the 51th message as did not get ack after that.</li>
+<li>Which means it also replays the 10 events that were processed after the checkpoint (even though they were already processed).</li>
 </ul>
-<h4 id="3-message-replay-and-deduplication">3. Message Replay and Deduplication</h4>
-<p>This is where MillWheel&rsquo;s exactly-once guarantee really shines:</p>
-<p>In our example:</p>
-<ul>
-<li>The source systems (Enrichment in this case) will replay messages that weren&rsquo;t acknowledged</li>
-<li>This includes all 40 unprocessed events, but might also include some of the 10 events processed after the last checkpoint</li>
-<li>Each message in MillWheel has a unique ID</li>
-<li>The system keeps a persistent log of processed message IDs as part of its state</li>
-<li>When a message arrives, it first checks if its ID is in the &ldquo;already processed&rdquo; log</li>
-<li>If found, the message is a duplicate and is silently dropped</li>
-<li>If not found, the message is processed and its ID is added to the log</li>
-</ul>
-<h4 id="4-exactly-once-guarantee-implementation">4. Exactly-Once Guarantee Implementation</h4>
-<p>The exactly-once guarantee relies on three mechanisms working together:</p>
-<ol>
-<li><strong>Strong Delivery</strong>: Messages are persistently stored until acknowledged</li>
-<li><strong>Determinism</strong>: Given the same inputs and state, a computation produces the same outputs</li>
-<li><strong>Idempotent Updates</strong>: Applying an update multiple times has the same effect as applying it once</li>
-</ol>
-<p>For our Aggregation computation:</p>
-<h4 id="5-maintaining-consistency-during-recovery">5. Maintaining Consistency During Recovery</h4>
-<p>For each key/value pair in the system&rsquo;s state:</p>
-<ol>
-<li>The persistent storage maintains the latest committed value</li>
-<li>Each computation keeps track of the keys it has modified since the last checkpoint</li>
-<li>When a checkpoint occurs, only modified keys are written to persistent storage</li>
-<li>This makes checkpointing efficient while ensuring consistency</li>
-</ol>
-<p>For our example:</p>
-<ul>
-<li>Only the category counters that changed during processing of those 10 events (between events 50-60) need to be recovered</li>
-<li>The system reconstructs this by replaying the events from 51-100</li>
-</ul>
+<p>To avoid counting any transaction twice, every event has a unique ID. The system checks these IDs—if it sees an ID it’s already processed, it simply skips it.</p>
+<h5 id="conclusion">conclusion</h5>
+<p>Even though the server crashed in the middle of processing, the system recovers by rolling back to the last checkpoint and reprocessing the missing events, all while ensuring that no transaction is counted twice.</p>
 
           </div>
           <div class="row items-start justify-between">
