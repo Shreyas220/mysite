@@ -732,7 +732,7 @@
             </li>
           </ol>
         </li>
-        <li><a href="#dealing-with-zombie-processes-and-stale-writes">Dealing with “Zombie” Processes and Stale Writes</a></li>
+        <li><a href="#dealing-with-zombie-processes">Dealing with “Zombie” Processes</a></li>
       </ol>
     </li>
     <li><a href="#lets-try-to-understand-this-with-an-example">Lets try to understand this with an example</a>
@@ -760,7 +760,7 @@
 We can run into issues like lost messages, processing the same message twice, or keeping track of state properly. This can lead to unreliable results or even system downtime. <br>
 For example, think about a system that monitors web searches to spot sudden trends. If a part of the system fails or some data gets dropped, it might miss a new trend or, even worse, trigger false alerts.</p>
 <h2 id="millwheels-fault-tolerance-mechanism">MillWheel’s Fault Tolerance Mechanism</h2>
-<p>MillWheel addressed these challenges by providing framework-level fault tolerance where any node or edge in the processing graph could fail without affecting the correctness of results, it does it  through a few core mechanisms:</p>
+<p>MillWheel addressed these challenges by providing framework level fault tolerance where any node or edge in the processing graph could fail without affecting the correctness of results, it does it  through a few core mechanisms:</p>
 <ul>
 <li>
 <p><strong>Persistent State Storage:</strong></p>
@@ -781,8 +781,8 @@ For example, think about a system that monitors web searches to spot sudden tren
 </ul>
 <p>let&rsquo;s dive a little deeper into the mechanisms</p>
 <p>MillWheel provides at-least-once delivery, meaning every record is retried only after it has successfully processed and acknowledged.</p>
-<p>This ensures no data is lost but introduces the potential for duplicate processing, like what if a receiver might process a record, persist the new state, but then crash before sending the ACK. When the record is re-delivered, the system re-processes it, considering it a new record.</p>
-<p>To prevent duplicate processing, we assign a global unique ID to each record at production time. Since keeping all processed IDs in memory would be impractical for long-running systems, MillWheel employs a two-tier approach: a bloom filter for fast in-memory checking, and a persistent backing store for definitive verification</p>
+<p>This ensures no data is lost but introduces the potential for duplicate processing, like what if a receiver might process a record, persist the new state, but then crash before sending the ACK. When the record is redelivered, the system reprocesses it, considering it a new record.</p>
+<p>To prevent duplicate processing, we assign a global unique ID to each record at production time. Since keeping all processed IDs in memory would be impractical for long running systems, MillWheel employs a two-tier approach: a bloom filter for fast inmemory checking, and a persistent backing store for definitive verification</p>
 <p>Once the changes are committed, the ACKs are sent to the sender so that it stops retrying.</p>
 <p>Only after all processing is complete and the changes are committed does the system send acknowledgments back to senders, signaling that they can stop retrying delivery. The system also intelligently manages these record IDs, keeping them only as long as necessary. Once the system confirms that no more retries will occur (typically after internal senders have completed their retry cycles), it cleans up these duplicate detection records to conserve resources.</p>
 <p>Now let&rsquo;s understand how this commits and recovery from the state system works</p>
@@ -794,11 +794,11 @@ For example, think about a system that monitors web searches to spot sudden tren
 <h5 id="soft-state">Soft State</h5>
 <pre><code>This includes things kept in memory such as caches or temporary aggregates. 
 </code></pre>
-<p>MillWheel workers save their current state very often—sometimes every second or even after each record. These frequent checkpoints allow the system to recover quickly by loading the most recent saved state rather than rebuilding from scratch.
+<p>MillWheel workers save their current state very often, sometimes every second or even after each record. These frequent checkpoints allow the system to recover quickly by loading the most recent saved state rather than rebuilding from scratch.
 Importantly, MillWheel allows workers to access their saved state without pausing all processing. This concurrent checkpointing and processing enables the system to maintain high throughput even while ensuring fault tolerance.<br>
 To maintain consistency across related pieces of state, MillWheel wraps state updates in atomic operations. This atomicity ensures that all parts of a key&rsquo;s state are updated together, maintaining invariants and preventing partial updates. For instance, if a financial application updates both an account balance and a transaction log, these updates must succeed or fail together to prevent inconsistencies.</p>
-<h3 id="dealing-with-zombie-processes-and-stale-writes">Dealing with “Zombie” Processes and Stale Writes</h3>
-<p>One of the most difficult challenges in distributed streaming systems involves managing &ldquo;zombie&rdquo; processes and preventing stale writes. When work migrates between machines—perhaps because a process failed or due to load rebalancing—there&rsquo;s a risk that an old or &ldquo;zombie&rdquo; process might later send updates that are no longer valid.</p>
+<h3 id="dealing-with-zombie-processes">Dealing with “Zombie” Processes</h3>
+<p>One of the most difficult challenges in distributed streaming systems involves managing &ldquo;zombie&rdquo; processes and preventing stale writes. When work migrates between machines, perhaps because a process failed or due to load rebalancing <br>there&rsquo;s a risk that an old or &ldquo;zombie&rdquo; process might later send updates that are no longer valid.</p>
 <p>For example, you have a Node A working on a task, but then they get replaced by Node B because they were too slow or failed.</p>
 <p>MillWheel solves this through a tokenized write validation system. Each update includes a special token that verifies its validity. When a new process takes over responsibility for a key, it invalidates older tokens, ensuring that only the most current process can update that key.</p>
 <p>Now if Process A (the “zombie”) later tries to update the task with outdated information, the system will ignore it because Process B’s token has already taken over. The system automatically rejects these stale writes, preserving consistency.</p>
@@ -829,7 +829,7 @@ To maintain consistency across related pieces of state, MillWheel wraps state up
 <li>It will replay from the 51th message as did not get ack after that.</li>
 <li>Which means it also replays the 10 events that were processed after the checkpoint (even though they were already processed).</li>
 </ul>
-<p>To avoid counting any transaction twice, every event has a unique ID. The system checks these IDs—if it sees an ID it’s already processed, it simply skips it.</p>
+<p>To avoid counting any transaction twice, every event has a unique ID. The system checks these IDs, if it sees an ID it’s already processed, it simply skips it.</p>
 <h5 id="conclusion">conclusion</h5>
 <p>Even though the server crashed in the middle of processing, the system recovers by rolling back to the last checkpoint and reprocessing the missing events, all while ensuring that no transaction is counted twice.</p>
 

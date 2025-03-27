@@ -9,18 +9,11 @@
     <lastBuildDate>Mon, 10 Mar 2025 05:00:00 +0000</lastBuildDate>
     <atom:link href="//localhost:1313/tags/fault-tolerance/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Async</title>
-      <link>//localhost:1313/blog/async/</link>
-      <pubDate>Mon, 10 Mar 2025 05:00:00 +0000</pubDate>
-      <guid>//localhost:1313/blog/async/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Fault tolerance in MillWheels</title>
       <link>//localhost:1313/blog/millwheel/</link>
       <pubDate>Mon, 10 Mar 2025 05:00:00 +0000</pubDate>
       <guid>//localhost:1313/blog/millwheel/</guid>
-      <description>&lt;p&gt;🚧 Under Construction 🚧&lt;/p&gt;&#xA;&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;Streaming systems operate under challenging conditions where data flows continuously, errors can occur at any stage, and any downtime may lead to lost or inconsistent information. This makes fault tolerance not just a feature but a necessity for ensuring that systems quickly recover from failures while maintaining state consistency and processing guarantee&lt;/p&gt;</description>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;Fault tolerance is super important for modern streaming systems since data is always in transit and failure can happen at any stage of the system. &lt;br&gt;&#xA;We can run into issues like lost messages, processing the same message twice, or keeping track of state properly. This can lead to unreliable results or even system downtime. &lt;br&gt;&#xA;For example, think about a system that monitors web searches to spot sudden trends. If a part of the system fails or some data gets dropped, it might miss a new trend or, even worse, trigger false alerts.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
