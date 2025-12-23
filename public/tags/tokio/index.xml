@@ -6,12 +6,12 @@
     <description>Recent content in Tokio on Shreyas Mishra</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 10 Mar 2025 05:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 25 Mar 2025 05:00:00 +0000</lastBuildDate>
     <atom:link href="//localhost:1313/tags/tokio/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Async</title>
+      <title>Rust: Tokio under the hood</title>
       <link>//localhost:1313/blog/tokio/</link>
-      <pubDate>Mon, 10 Mar 2025 05:00:00 +0000</pubDate>
+      <pubDate>Tue, 25 Mar 2025 05:00:00 +0000</pubDate>
       <guid>//localhost:1313/blog/tokio/</guid>
       <description>&lt;h1 id=&#34;understanding-tokio-rusts-asynchronous-runtime&#34;&gt;Understanding Tokio: Rust&amp;rsquo;s Asynchronous Runtime&lt;/h1&gt;&#xA;&lt;p&gt;Asynchronous programming has become essential for building efficient, high-performance applications. In the Rust ecosystem, Tokio stands as the most popular asynchronous runtime. But what exactly is Tokio, and how does it work under the hood? Let&amp;rsquo;s dive deep into Tokio&amp;rsquo;s internals and explore how it connects to Rust&amp;rsquo;s async programming model.&lt;/p&gt;</description>
     </item>

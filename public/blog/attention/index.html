@@ -1,0 +1,1506 @@
+<!doctype html>
+<html
+  itemscope
+  class=""
+  lang="en-us"
+  itemtype="http://schema.org/WebPage">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+    <meta charset="utf-8" />
+
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=5" />
+
+
+<meta name="theme-name" content="hugoplate" />
+
+
+
+
+
+
+
+
+
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta
+  name="msapplication-TileColor"
+  content="#ddd" />
+<meta
+  name="theme-color"
+  content="#ffffff" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <base href="//localhost:1313/blog/attention/" />
+
+
+
+
+
+
+
+  
+  
+
+
+<title>Learning Attention Mechanism from Scratch</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <meta
+    name="keywords"
+    content="Boilerplate, Hugo" />
+
+
+
+
+<meta
+  name="description"
+  content="Understanding scaled dot-product attention step-by-step with a minimal Rust implementation and GloVe embeddings" />
+
+
+
+  <meta name="author" content="zeon.studio" />
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+
+
+  
+  
+    
+    
+      
+    
+
+    
+
+
+    
+    
+
+
+    
+    
+      
+      
+      
+        <meta property="og:image" content="//localhost:1313/images/cover_attention.png" />
+        <meta name="twitter:image" content="//localhost:1313/images/cover_attention.png" />
+        <meta
+          name="twitter:card"
+          content="summary_large_image" />
+      
+      
+      <meta property="og:image:width" content="1536" />
+      <meta property="og:image:height" content="1024" />
+    
+
+
+    
+    <meta
+      property="og:image:type"
+      content="image/.png" />
+  
+
+
+  
+
+
+
+
+
+<meta property="og:title" content="Learning Attention Mechanism from Scratch" />
+<meta property="og:description" content="Understanding scaled dot-product attention step-by-step with a minimal Rust implementation and GloVe embeddings" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="//localhost:1313/blog/attention/" />
+
+
+<meta name="twitter:title" content="Learning Attention Mechanism from Scratch" />
+<meta name="twitter:description" content="Understanding scaled dot-product attention step-by-step with a minimal Rust implementation and GloVe embeddings" />
+
+
+  <meta name="twitter:site" content="@zeon_studio" />
+
+
+  <meta name="twitter:creator" content="@zeon.studio" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  let indexURL = "//localhost:1313/searchindex.json";
+  let includeSectionsInSearch = ["blog"];
+  let search_no_results = "No results for";
+  let search_initial_message = "Type something to search..";
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+<meta http-equiv="x-dns-prefetch-control" content="on" />
+<link rel="preconnect" href="https://use.fontawesome.com" crossorigin />
+<link rel="preconnect" href="//cdnjs.cloudflare.com" />
+<link rel="preconnect" href="//www.googletagmanager.com" />
+<link rel="preconnect" href="//www.google-analytics.com" />
+<link rel="dns-prefetch" href="https://use.fontawesome.com" />
+<link rel="dns-prefetch" href="//ajax.googleapis.com" />
+<link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+<link rel="dns-prefetch" href="//www.googletagmanager.com" />
+<link rel="dns-prefetch" href="//www.google-analytics.com" />
+<link rel="dns-prefetch" href="//fonts.googleapis.com" />
+<link rel="dns-prefetch" href="//connect.facebook.net" />
+<link rel="dns-prefetch" href="//platform.linkedin.com" />
+<link rel="dns-prefetch" href="//platform.twitter.com" />
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<script>
+  (function () {
+    const googleFont = document.createElement("link");
+    googleFont.href = "https://fonts.googleapis.com/css2?family=Heebo:wght@400;600&family=Signika:wght@500;700&display=swap";
+    googleFont.type = "text/css";
+    googleFont.rel = "stylesheet";
+    document.head.appendChild(googleFont);
+  })();
+</script>
+
+
+
+
+
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link
+  href="/css/style.css"
+  integrity=""
+  rel="stylesheet" />
+
+
+<link
+  defer
+  async
+  rel="stylesheet"
+  href="/css/style-lazy.css"
+  integrity=""
+  media="print"
+  onload="this.media='all'; this.onload=null;" />
+
+
+  </head>
+
+  <body>
+    
+    
+      
+
+
+
+
+
+      
+      <div
+  class="fixed left-0 top-0 z-50 flex w-[30px] items-center justify-center bg-gray-200 py-[2.5px] text-[12px] uppercase text-black sm:bg-red-200 md:bg-yellow-200 lg:bg-green-200 xl:bg-blue-200 2xl:bg-pink-200">
+  <span class="block sm:hidden">all</span>
+  <span class="hidden sm:block md:hidden">sm</span>
+  <span class="hidden md:block lg:hidden">md</span>
+  <span class="hidden lg:block xl:hidden">lg</span>
+  <span class="hidden xl:block 2xl:hidden">xl</span>
+  <span class="hidden 2xl:block">2xl</span>
+</div>
+
+    
+
+
+    
+    
+
+
+
+
+
+    
+    <header
+  class="header  z-30">
+  <nav class="navbar container">
+    
+    <div class="order-0">
+      
+      <a class="navbar-brand block" href="/">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  Shreyas Mishra
+
+
+      </a>
+    </div>
+    
+    <input id="nav-toggle" type="checkbox" class="hidden" />
+    <label
+      for="nav-toggle"
+      class="order-3 cursor-pointer flex items-center lg:hidden text-text-dark dark:text-white lg:order-1">
+      <svg id="show-button" class="h-6 fill-current block" viewBox="0 0 20 20">
+        <title>Menu Open</title>
+        <path d="M0 3h20v2H0V3z m0 6h20v2H0V9z m0 6h20v2H0V0z"></path>
+      </svg>
+      <svg id="hide-button" class="h-6 fill-current hidden" viewBox="0 0 20 20">
+        <title>Menu Close</title>
+        <polygon
+          points="11 9 22 9 22 11 11 11 11 22 9 22 9 11 -2 11 -2 9 9 9 9 -2 11 -2"
+          transform="rotate(45 10 10)"></polygon>
+      </svg>
+    </label>
+    
+
+    
+    <ul
+      id="nav-menu"
+      class="navbar-nav order-3 hidden lg:flex w-full pb-6 lg:order-1 lg:w-auto lg:space-x-2 lg:pb-0 xl:space-x-8">
+      
+      
+        
+        
+        
+        
+          <li class="nav-item">
+            <a
+              class="nav-link "
+              
+              href="/about"
+              >About</a
+            >
+          </li>
+        
+      
+        
+        
+        
+        
+          <li class="nav-item">
+            <a
+              class="nav-link "
+              
+              href="/blog"
+              >Blog</a
+            >
+          </li>
+        
+      
+      
+    </ul>
+
+    <div class="order-1 ml-auto flex items-center md:order-2 lg:ml-0">
+      
+
+      
+
+      
+
+
+  <div class="theme-switcher mr-5 hidden">
+    <input id="theme-switcher" data-theme-switcher type="checkbox" />
+    <label for="theme-switcher">
+      <span class="sr-only">theme switcher</span>
+      <span>
+        
+        <svg
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 opacity-100 dark:opacity-0"
+          viewBox="0 0 56 56"
+          fill="#fff"
+          height="16"
+          width="16">
+          <path
+            d="M30 4.6c0-1-.9-2-2-2a2 2 0 0 0-2 2v5c0 1 .9 2 2 2s2-1 2-2Zm9.6 9a2 2 0 0 0 0 2.8c.8.8 2 .8 2.9 0L46 13a2 2 0 0 0 0-2.9 2 2 0 0 0-3 0Zm-26 2.8c.7.8 2 .8 2.8 0 .8-.7.8-2 0-2.9L13 10c-.7-.7-2-.8-2.9 0-.7.8-.7 2.1 0 3ZM28 16a12 12 0 0 0-12 12 12 12 0 0 0 12 12 12 12 0 0 0 12-12 12 12 0 0 0-12-12Zm23.3 14c1.1 0 2-.9 2-2s-.9-2-2-2h-4.9a2 2 0 0 0-2 2c0 1.1 1 2 2 2ZM4.7 26a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4.9c1 0 2-.9 2-2s-1-2-2-2Zm37.8 13.6a2 2 0 0 0-3 0 2 2 0 0 0 0 2.9l3.6 3.5a2 2 0 0 0 2.9 0c.8-.8.8-2.1 0-3ZM10 43.1a2 2 0 0 0 0 2.9c.8.7 2.1.8 3 0l3.4-3.5c.8-.8.8-2.1 0-2.9-.8-.8-2-.8-2.9 0Zm20 3.4c0-1.1-.9-2-2-2a2 2 0 0 0-2 2v4.9c0 1 .9 2 2 2s2-1 2-2Z" />
+        </svg>
+        
+        <svg
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 opacity-0 dark:opacity-100"
+          viewBox="0 0 24 24"
+          fill="none"
+          height="16"
+          width="16">
+          <path
+            fill="#000"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M8.2 2.2c1-.4 2 .6 1.6 1.5-1 3-.4 6.4 1.8 8.7a8.4 8.4 0 0 0 8.7 1.8c1-.3 2 .5 1.5 1.5v.1a10.3 10.3 0 0 1-9.4 6.2A10.3 10.3 0 0 1 3.2 6.7c1-2 2.9-3.5 4.9-4.4Z" />
+        </svg>
+      </span>
+    </label>
+  </div>
+
+  
+  <script>
+    var darkMode = false;
+
+    
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches){darkMode = true}
+    
+
+    if (localStorage.getItem("theme") === "dark"){darkMode = true}
+    else if (localStorage.getItem("theme") === "light"){darkMode = false}
+
+    if (darkMode){document.documentElement.classList.add("dark")}
+    else {document.documentElement.classList.remove("dark")}
+
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      var themeSwitch = document.querySelectorAll("[data-theme-switcher]");
+      var themeSwitcherContainer = document.querySelector('.theme-switcher');
+
+      [].forEach.call(themeSwitch, function (ts) {
+        ts.checked = darkMode;
+        ts.addEventListener("click", () => {
+          document.documentElement.classList.toggle("dark");
+          localStorage.setItem(
+            "theme",
+            document.documentElement.classList.contains("dark") ? "dark" : "light"
+          );
+        });
+      });
+
+      
+      themeSwitcherContainer.classList.remove('hidden');
+    });
+  </script>
+
+
+
+
+      
+      
+    </div>
+  </nav>
+</header>
+
+    
+
+
+
+
+
+
+
+    <main>
+      
+  <section class="section pt-7">
+    <div class="container">
+      <div class="row justify-center">
+        <article class="lg:col-10">
+          
+          
+            <div class="mb-10">
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  
+    
+      
+    
+
+
+    
+    
+
+
+    
+    
+      
+      
+    
+    
+    
+
+
+    
+    
+      
+      
+        
+
+        
+        
+        
+        
+        
+        
+        
+
+
+        
+        
+
+
+        <picture>
+          <source
+            
+              srcset="/images/cover_attention_hu_dd4749d63e937cd8.webp"
+            
+            media="(max-width: 575px)" />
+          <source
+            
+              srcset="/images/cover_attention_hu_34e7d1b015b0129b.webp"
+            
+            media="(max-width: 767px)" />
+          <source
+            
+              srcset="/images/cover_attention_hu_bd899947ff36154f.webp"
+            
+            media="(max-width: 991px)" />
+          <source
+            
+              srcset="/images/cover_attention_hu_5ffc35db7421e589.webp"
+             />
+          <img
+            
+              loading="lazy" decoding="async"
+              src="/images/cover_attention_hu_6ad3fc03c84bd11e.png"
+            class=" w-full rounded img"
+            alt="May I Have Your ATTENTION ?"
+            width="1536"
+            height="1024" />
+        </picture>
+      
+      
+    
+    
+  
+
+
+  
+
+
+            </div>
+          
+          <h1 class="h2 mb-4">
+            May I Have Your ATTENTION ?
+          </h1>
+          <ul class="mb-4">
+            <li class="mr-4 inline-block">
+              <a
+                href="/authors/shreyas-mishra/">
+                <i class="fa-regular fa-circle-user mr-2"></i
+                >Shreyas Mishra
+              </a>
+            </li>
+            
+            
+              <li class="mr-4 inline-block">
+                <i class="fa-regular fa-folder mr-2"></i>
+                
+                  <a
+                    href="/categories/rust/"
+                    class=""
+                    >Rust
+                      ,
+                    
+                  </a>
+                
+                  <a
+                    href="/categories/machine-learning/"
+                    class=""
+                    >Machine learning
+                  </a>
+                
+              </li>
+            
+            <li class="mr-4 inline-block">
+              <i class="fa-regular fa-clock mr-2"></i>
+              December 21, 2025
+            </li>
+          </ul>
+          <div class="content mb-10">
+            
+
+ 
+  
+
+<details open class="table-of-content blog">
+  <summary>
+    
+      Table of Contents
+    
+  </summary>
+  <nav id="TableOfContents">
+  <ol>
+    <li><a href="#what-is-attention">What is Attention?</a></li>
+    <li><a href="#the-core-idea">The Core Idea</a></li>
+    <li><a href="#the-math-step-by-step">The Math, Step by Step</a>
+      <ol>
+        <li><a href="#step-1-computing-similarity-with-dot-product">Step 1: Computing Similarity with Dot Product</a></li>
+        <li><a href="#step-2-converting-scores-to-probabilities-softmax">Step 2: Converting Scores to Probabilities (Softmax)</a></li>
+        <li><a href="#step-3-why-we-need-scaling-for-the-dot-product">Step 3: Why We Need Scaling for the dot product</a></li>
+        <li><a href="#step-4-weighted-sum-of-values">Step 4: Weighted Sum of Values</a></li>
+      </ol>
+    </li>
+    <li><a href="#the-complete-formula">The Complete Formula</a></li>
+    <li><a href="#from-simple-similarity-to-true-understanding">From Simple Similarity to True Understanding</a>
+      <ol>
+        <li><a href="#what-our-poc-does-semantic-similarity">What Our POC Does: Semantic Similarity</a></li>
+        <li><a href="#what-our-poc-cant-do-coreference">What Our POC Can&rsquo;t Do: Coreference</a></li>
+        <li><a href="#the-gap-similarity-vs-relationship">The Gap: Similarity vs. Relationship</a></li>
+        <li><a href="#how-attention-enables-context-understanding">How Attention Enables Context Understanding</a>
+          <ol>
+            <li><a href="#raw-embeddings-our-poc">Raw Embeddings (Our POC)</a></li>
+            <li><a href="#learned-projections-real-transformers">Learned Projections (Real Transformers)</a></li>
+          </ol>
+        </li>
+        <li><a href="#how-context-builds-through-layers">How Context Builds Through Layers</a></li>
+        <li><a href="#the-training-signal">The Training Signal</a></li>
+        <li><a href="#summary-the-progression">Summary: The Progression</a></li>
+      </ol>
+    </li>
+    <li><a href="#running-the-code">Running the Code</a>
+      <ol>
+        <li><a href="#download-glove-embeddings">Download GloVe Embeddings</a></li>
+        <li><a href="#run-the-program">Run the Program</a></li>
+        <li><a href="#example-output">Example Output</a></li>
+      </ol>
+    </li>
+    <li><a href="#key-takeaways">Key Takeaways</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+</details>
+
+            <h1 id="attention-mechanism-from-scratch">Attention Mechanism from Scratch</h1>
+<p>A minimal Rust implementation demonstrating how scaled dot-product attention works. -&gt; <a href="https://github.com/Shreyas220/llm-playground/tree/main/attention-playground"
+
+
+
+
+ target="_blank"
+ 
+
+
+>https://github.com/Shreyas220/llm-playground/tree/main/attention-playground</a></p>
+<h2 id="what-is-attention">What is Attention?</h2>
+<p>Imagine reading the sentence: <strong>&ldquo;The cat sat on the mat because it was tired.&rdquo;</strong></p>
+<p>What does &ldquo;it&rdquo; refer to?
+I would instinctively look back at &ldquo;cat&rdquo;  and that is called attention.
+Our brain assigns relevance in some way assigned scores to previous words <code>cat</code> when processing the current <code>it</code>.</p>
+<p>Attention mechanisms let neural networks do the same thing, focus on relevant parts of the input.</p>
+<div style="text-align: center;">
+  <img src="/images/attention1.png" alt="Attention visualization showing how 'it' attends to 'cat' in the sentence" style="max-width: 600px; width: 100%;" />
+</div>
+<p>Now my goal is to understand how this relevance is assigned mathematically. We will start small</p>
+<hr>
+<h2 id="the-core-idea">The Core Idea</h2>
+<p>Every attention layer asks a question: <strong>&ldquo;Which other tokens should I pay attention to?&rdquo;</strong></p>
+<p>To answer this, each token gets three vectors:</p>
+<p>Think of this like a database lookup:</p>
+<ul>
+<li><strong>Query (Q)</strong>: The search term you type (e.g., &ldquo;tired entity&rdquo;).</li>
+<li><strong>Key (K)</strong>: The labels or metadata on the database records (e.g., &ldquo;cat: living&rdquo;, &ldquo;mat: object&rdquo;).</li>
+<li><strong>Value (V)</strong>: The actual data inside the record you want to retrieve.</li>
+</ul>
+<p>In a standard Hash Map, you look for an exact match ($Key == Query$). In Attention, we look for a similarity match ($Key \approx Query$).</p>
+<p>Attention score = how well a Query matches a Key.</p>
+<hr>
+<h2 id="the-math-step-by-step">The Math, Step by Step</h2>
+<h3 id="step-1-computing-similarity-with-dot-product">Step 1: Computing Similarity with Dot Product</h3>
+<p>The dot product measures how &ldquo;aligned&rdquo; two vectors are:</p>
+<pre tabindex="0"><code>Q = [2, 3]      ← Query: &#34;what I&#39;m looking for&#34;
+
+Keys:
+  C = [11, 13]  ← Key C
+  A = [1,  2]   ← Key A
+  B = [4,  6]   ← Key B
+</code></pre><p>Computing Q · each Key:</p>
+<pre tabindex="0"><code>Q · C = 2×11 + 3×13 = 22 + 39 = 61  ← High similarity!
+Q · A = 2×1  + 3×2  = 2  + 6  = 8   ← Low similarity
+Q · B = 2×4  + 3×6  = 8  + 18 = 26  ← Medium similarity
+
+Scores = [61, 8, 26]
+</code></pre><p><strong>Intuition</strong>: The dot product is large when vectors point in similar directions. Q and C are most aligned, so C gets the highest score.</p>
+<hr>
+<h3 id="step-2-converting-scores-to-probabilities-softmax">Step 2: Converting Scores to Probabilities (Softmax)</h3>
+<p>Raw scores can be any number. We need probabilities that sum to 1:</p>
+<pre tabindex="0"><code>softmax(xᵢ) = eˣⁱ / Σeˣʲ
+</code></pre><p>For scores [61, 8, 26]:</p>
+<pre tabindex="0"><code>e⁶¹ ≈ 10²⁶    (huge!)
+e⁸  ≈ 2981
+e²⁶ ≈ 10¹¹
+
+softmax ≈ [≈1.0, ≈0.0, ≈0.0]
+</code></pre><p><strong>Problem</strong>: The exponential makes large differences extreme. Token C gets ALL the attention, A and B get essentially zero.</p>
+<hr>
+<h3 id="step-3-why-we-need-scaling-for-the-dot-product">Step 3: Why We Need Scaling for the dot product</h3>
+<p>Here&rsquo;s the critical insight from the original &ldquo;Attention Is All You Need&rdquo; paper.</p>
+<p>Consider high-dimensional vectors with 100 dimensions</p>
+<pre tabindex="0"><code>dₖ = 100 dimensions
+
+q  = [1, 1, 1, 1, ... 1]      ← 100 ones
+K₁ = [1, 1, 1, 1, ... 1]      ← Perfect match
+K₂ = [0.8, 0.8, 0.8, ... 0.8] ← Pretty good match (80% similar)
+</code></pre><p><strong>Without scaling:</strong></p>
+<pre tabindex="0"><code>Q · K₁ = 1×1 + 1×1 + ... (100 times) = 100
+Q · K₂ = 1×0.8 + 1×0.8 + ... (100 times) = 80
+
+Difference = 20 points
+</code></pre><p>Now softmax:</p>
+<pre tabindex="0"><code>softmax([100, 80]) = [e¹⁰⁰, e⁸⁰] / (e¹⁰⁰ + e⁸⁰)
+                    ≈ [1.0, 0.0]
+</code></pre><p><strong>The model is overconfident!</strong> It says K₁ gets 100% attention and K₂ gets 0%, even though K₂ was 80% similar.</p>
+<p><strong>Why this happens</strong>: In high dimensions, dot products naturally have larger magnitudes. The variance of a dot product grows with dimension d. This pushes softmax into saturation where gradients vanish.</p>
+<p><strong>The fix —&gt; scale by 1/√dₖ:</strong></p>
+<p>1/√dₖ (Scaling): We divide by the square root of the dimension to prevent the dot products from exploding.</p>
+<pre tabindex="0"><code>
+scaled_scores = [100, 80] / √100 = [10, 8]
+
+softmax([10, 8]) = [e¹⁰, e⁸] / (e¹⁰ + e⁸)
+                  ≈ [0.88, 0.12]
+</code></pre><p>Now K₂ gets 12% of attention, the model acknowledges uncertainty!</p>
+<p><strong>The scaling factor 1/√dₖ normalizes variance</strong>, keeping softmax in a healthy range regardless of embedding dimension.</p>
+<hr>
+<h3 id="step-4-weighted-sum-of-values">Step 4: Weighted Sum of Values</h3>
+<p>Once we have attention weights, we compute a weighted average of Value vectors:</p>
+<pre tabindex="0"><code>weights = [0.88, 0.12]
+V₁ = [...]  ← Value vector for K₁
+V₂ = [...]  ← Value vector for K₂
+
+output = 0.88 × V₁ + 0.12 × V₂
+</code></pre><hr>
+<h2 id="the-complete-formula">The Complete Formula</h2>
+<div style="text-align: center;">
+  <img src="/images/attention2.png" alt="Attention formula pipeline: Q, K, V → QKᵀ → scale → softmax → output" style="max-width: 500px; width: 100%;" />
+</div>
+<pre tabindex="0"><code>Attention(Q, K, V) = softmax(QKᵀ / √dₖ) · V
+</code></pre><p>Where:</p>
+<ul>
+<li><code>QKᵀ</code> computes all pairwise similarities</li>
+<li><code>√dₖ</code> prevents softmax saturation (dₖ = dimension of keys)</li>
+<li><code>softmax</code> converts to probabilities</li>
+<li><code>· V</code> blends values by those probabilities</li>
+</ul>
+<p>In multi-head attention: <code>dₖ = dₘₒₐₑₗ / h</code> (model dimension / number of heads)</p>
+<hr>
+<h2 id="from-simple-similarity-to-true-understanding">From Simple Similarity to True Understanding</h2>
+<h3 id="what-our-poc-does-semantic-similarity">What Our POC Does: Semantic Similarity</h3>
+<p>Our implementation uses raw GloVe embeddings, pre-trained vectors that capture word co-occurrence patterns.</p>
+<pre tabindex="0"><code>&#34;The king and queen ruled the kingdom&#34;
+
+kingdom → king:   29.5%  ████████   ✓ Works!
+kingdom → queen:  18.3%  █████      ✓ Works!
+queen → king:     39.5%  ██████████ ✓ Works!
+</code></pre><p><strong>Why it works</strong>: GloVe learned that &ldquo;king&rdquo;, &ldquo;queen&rdquo;, and &ldquo;kingdom&rdquo; appear in similar contexts (royalty, monarchy, medieval). Their vectors point in similar directions, so dot product is high.</p>
+<hr>
+<h3 id="what-our-poc-cant-do-coreference">What Our POC Can&rsquo;t Do: Coreference</h3>
+<p>Remember our opening example? Let&rsquo;s try it:</p>
+<pre tabindex="0"><code>&#34;The cat sat on the mat because it was tired&#34;
+
+it → cat:      3.7%   █         ✗ Fails!
+it → because:  22.8%  ██████    ✗ Wrong!
+it → mat:      0.9%   ░
+</code></pre><p><strong>Why it fails</strong>: &ldquo;it&rdquo; and &ldquo;cat&rdquo; don&rsquo;t appear in similar contexts in text. GloVe has no idea that &ldquo;it&rdquo; <em>refers to</em> &ldquo;cat&rdquo; in this sentence. That requires understanding grammar, not just word similarity.</p>
+<hr>
+<h3 id="the-gap-similarity-vs-relationship">The Gap: Similarity vs. Relationship</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Task</th>
+          <th>Example</th>
+          <th>Raw Embeddings</th>
+          <th>Needs Training</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Semantic similarity</td>
+          <td>king ↔ queen</td>
+          <td>✅ Works</td>
+          <td>No</td>
+      </tr>
+      <tr>
+          <td>Verb-object</td>
+          <td>ruled → kingdom</td>
+          <td>✅ Partial</td>
+          <td>Better with training</td>
+      </tr>
+      <tr>
+          <td>Coreference</td>
+          <td>it → cat</td>
+          <td>❌ Fails</td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>Negation</td>
+          <td>&ldquo;not happy&rdquo; means sad</td>
+          <td>❌ Fails</td>
+          <td>Yes</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="how-attention-enables-context-understanding">How Attention Enables Context Understanding</h3>
+<p>This is where <strong>learnable projection matrices</strong> (W_Q, W_K, W_V) become crucial.</p>
+<h4 id="raw-embeddings-our-poc">Raw Embeddings (Our POC)</h4>
+<pre tabindex="0"><code>embed(&#34;it&#34;)  = [0.2, -0.1, 0.4, ...]   → used directly as Query
+embed(&#34;cat&#34;) = [0.8, 0.3, -0.2, ...]   → used directly as Key
+
+Query · Key = low (vectors aren&#39;t aligned)
+</code></pre><h4 id="learned-projections-real-transformers">Learned Projections (Real Transformers)</h4>
+<pre tabindex="0"><code>embed(&#34;it&#34;)  × W_Q = Query  →  &#34;I&#39;m a pronoun looking for my referent&#34;
+embed(&#34;cat&#34;) × W_K = Key    →  &#34;I&#39;m an animate noun that could be tired&#34;
+
+Query · Key = HIGH (projections learned to align these!)
+</code></pre><p><strong>The magic</strong>: W_Q and W_K are learned during training on millions of examples where the model had to figure out what &ldquo;it&rdquo; refers to. Through backpropagation, these matrices adjust so that:</p>
+<ul>
+<li>Pronouns&rsquo; Queries align with their referents&rsquo; Keys</li>
+<li>Verbs&rsquo; Queries align with their subjects/objects&rsquo; Keys</li>
+<li>Adjectives&rsquo; Queries align with the nouns they modify</li>
+</ul>
+<hr>
+<h3 id="how-context-builds-through-layers">How Context Builds Through Layers</h3>
+<p>A single attention layer can find direct relationships. But understanding &ldquo;it → cat&rdquo; in a complex sentence requires multiple layers:</p>
+<pre tabindex="0"><code>Layer 1: Local relationships
+    &#34;sat&#34; notices &#34;cat&#34; (subject-verb)
+    &#34;tired&#34; notices &#34;was&#34; (verb-adjective)
+
+Layer 2: Clause structure
+    &#34;because&#34; connects the two clauses
+    &#34;it&#34; starts looking for animate nouns
+
+Layer 3: Coreference resolution
+    &#34;it&#34; strongly attends to &#34;cat&#34; (not &#34;mat&#34;)
+    Why? &#34;cat&#34; is animate, &#34;mat&#34; can&#39;t be &#34;tired&#34;
+
+Layer 4+: Refined understanding
+    &#34;tired&#34; now carries context from &#34;cat&#34;
+    The full meaning is assembled
+</code></pre><p>Each layer refines the representation. By layer 12 (or 96 in large models), the vector for &ldquo;it&rdquo; has absorbed information from &ldquo;cat&rdquo; through accumulated attention.</p>
+<hr>
+<h3 id="the-training-signal">The Training Signal</h3>
+<p>How do the projection matrices learn the right relationships?</p>
+<pre tabindex="0"><code>Training example:
+    Input:  &#34;The cat sat on the mat because it was&#34;
+    Target: &#34;tired&#34;
+
+Model prediction with random weights:
+    P(&#34;tired&#34;) = 2%
+    P(&#34;heavy&#34;) = 8%    ← wrong! (mat is heavy, cat is tired)
+
+Loss is high → backpropagate → adjust W_Q, W_K, W_V
+
+After millions of examples:
+    &#34;it&#34; learns to attend to animate nouns when followed by states like &#34;tired&#34;
+    P(&#34;tired&#34;) = 45%
+</code></pre><p>The model never explicitly learns &ldquo;pronouns refer to nouns.&rdquo; It learns patterns that achieve low loss on next-word prediction — and those patterns <em>happen to encode</em> coreference, grammar, and reasoning.</p>
+<hr>
+<h3 id="summary-the-progression">Summary: The Progression</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Stage</th>
+          <th>What It Does</th>
+          <th>Example</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Raw embeddings</strong></td>
+          <td>Finds similar words</td>
+          <td>king ↔ queen</td>
+      </tr>
+      <tr>
+          <td><strong>+ Attention</strong></td>
+          <td>Weighs relevance</td>
+          <td>king focuses on queen, not &ldquo;the&rdquo;</td>
+      </tr>
+      <tr>
+          <td><strong>+ Learned projections</strong></td>
+          <td>Finds relationships</td>
+          <td>&ldquo;it&rdquo; finds &ldquo;cat&rdquo;</td>
+      </tr>
+      <tr>
+          <td><strong>+ Multiple layers</strong></td>
+          <td>Builds context</td>
+          <td>&ldquo;tired&rdquo; knows it describes cat via &ldquo;it&rdquo;</td>
+      </tr>
+      <tr>
+          <td><strong>+ Scale</strong></td>
+          <td>Emergent understanding</td>
+          <td>Reasoning, instruction-following</td>
+      </tr>
+  </tbody>
+</table>
+<p>Our POC demonstrates stages 1-2. Real transformers add stages 3-5 through training on massive data.</p>
+<hr>
+<h2 id="running-the-code">Running the Code</h2>
+<h3 id="download-glove-embeddings">Download GloVe Embeddings</h3>
+<p>First, download the pre-trained GloVe embeddings:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd attention-playground
+</span></span><span style="display:flex;"><span>curl -L -o data/glove.6B.zip https://nlp.stanford.edu/data/glove.6B.zip
+</span></span><span style="display:flex;"><span>unzip data/glove.6B.zip -d data/ glove.6B.50d.txt
+</span></span><span style="display:flex;"><span>rm data/glove.6B.zip
+</span></span></code></pre></div><h3 id="run-the-program">Run the Program</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Analyze a sentence</span>
+</span></span><span style="display:flex;"><span>cargo run -- <span style="color:#e6db74">&#34;The king and queen ruled the kingdom&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Disable self-attention (tokens can&#39;t attend to themselves)</span>
+</span></span><span style="display:flex;"><span>cargo run -- --no-self <span style="color:#e6db74">&#34;The king and queen ruled the kingdom&#34;</span>
+</span></span></code></pre></div><h3 id="example-output">Example Output</h3>
+<pre tabindex="0"><code>Token &#39;king&#39; attending to sequence:
+
+  Attention weights for &#39;king&#39;:
+    the          0.0647  █
+    king         0.4431  █████████████
+    and          0.0489  █
+    queen        0.1645  ████
+    ruled        0.0629  █
+    the          0.0647  █
+    kingdom      0.1512  ████
+</code></pre><p>Notice &ldquo;king&rdquo; attends most to itself (44%), but also finds &ldquo;queen&rdquo; (16%) and &ldquo;kingdom&rdquo; (15%) — the semantically related words.</p>
+<hr>
+<h2 id="key-takeaways">Key Takeaways</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Concept</th>
+          <th>Why It Matters</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Dot Product</strong></td>
+          <td>Measures vector alignment — similar meanings → higher scores</td>
+      </tr>
+      <tr>
+          <td><strong>Scaling (1/√dₖ)</strong></td>
+          <td>Prevents overconfidence in high dimensions</td>
+      </tr>
+      <tr>
+          <td><strong>Softmax</strong></td>
+          <td>Turns scores into a probability distribution</td>
+      </tr>
+      <tr>
+          <td><strong>Weighted Sum</strong></td>
+          <td>Blends information based on relevance</td>
+      </tr>
+  </tbody>
+</table>
+<p>The <code>1/√dₖ</code> scaling factor is subtle but crucial.
+It&rsquo;s the difference between a model that learns nuanced relationships and one that makes overconfident binary decisions.</p>
+<hr>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1706.03762"
+
+
+
+
+ target="_blank"
+ 
+
+
+>Attention Is All You Need</a> — The original transformer paper</li>
+<li><a href="https://nlp.stanford.edu/projects/glove/"
+
+
+
+
+ target="_blank"
+ 
+
+
+>GloVe: Global Vectors for Word Representation</a></li>
+<li><a href="https://www.youtube.com/watch?v=eMlx5fFNoYc"
+
+
+
+
+ target="_blank"
+ 
+
+
+>Attention: 3Blue1Brown video</a></li>
+</ul>
+
+          </div>
+          <div class="row items-start justify-between">
+            
+            
+              <div class="lg:col-6 mb-10 flex items-center lg:mb-0">
+                <h5 class="mr-3">Tags :</h5>
+                <ul>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/attention/">
+                        Attention
+                      </a>
+                    </li>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/transformers/">
+                        Transformers
+                      </a>
+                    </li>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/deep-learning/">
+                        Deep learning
+                      </a>
+                    </li>
+                  
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="/tags/rust/">
+                        Rust
+                      </a>
+                    </li>
+                  
+                </ul>
+              </div>
+            
+            <div class="lg:col-6 flex items-center">
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="share-icons lg:ml-auto">
+  <h5 class="share-title">Share :</h5>
+
+
+  
+  
+    <a
+      class="share-link share-facebook"
+      href="https://facebook.com/sharer/sharer.php?u=%2f%2flocalhost%3a1313%2fblog%2fattention%2f"
+      target="_blank"
+      rel="noopener"
+      aria-label="share facebook">
+      <span class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-twitter"
+      href="https://twitter.com/intent/tweet/?text=Share&amp;url=%2f%2flocalhost%3a1313%2fblog%2fattention%2f"
+      target="_blank"
+      rel="noopener"
+      aria-label="share twitter">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path 
+            d="M8 2H1l8.26 11.015L1.45 22H4.1l6.388-7.349L16 22h7l-8.608-11.478L21.8 2h-2.65l-5.986 6.886zm9 18L5 4h2l12 16z"/>
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-email"
+      href="mailto:?subject=Share&amp;body=%2f%2flocalhost%3a1313%2fblog%2fattention%2f"
+      target="_self"
+      rel="noopener"
+      aria-label="share email">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.25 14.43l-3.5 2c-.08.05-.17.07-.25.07-.17 0-.34-.1-.43-.25-.14-.24-.06-.55.18-.68l3.5-2c.24-.14.55-.06.68.18.14.24.06.55-.18.68zm4.75.07c-.1 0-.2-.03-.27-.08l-8.5-5.5c-.23-.15-.3-.46-.15-.7.15-.22.46-.3.7-.14L12 13.4l8.23-5.32c.23-.15.54-.08.7.15.14.23.07.54-.16.7l-8.5 5.5c-.08.04-.17.07-.27.07zm8.93 1.75c-.1.16-.26.25-.43.25-.08 0-.17-.02-.25-.07l-3.5-2c-.24-.13-.32-.44-.18-.68s.44-.32.68-.18l3.5 2c.24.13.32.44.18.68z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+    <a
+      class="share-link share-reddit"
+      href="https://reddit.com/submit/?url=%2f%2flocalhost%3a1313%2fblog%2fattention%2f&amp;resubmit=true&amp;title=Share"
+      target="_blank"
+      rel="noopener"
+      aria-label="share reddit">
+      <span aria-hidden="true" class="share-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M24 11.5c0-1.65-1.35-3-3-3-.96 0-1.86.48-2.42 1.24-1.64-1-3.75-1.64-6.07-1.72.08-1.1.4-3.05 1.52-3.7.72-.4 1.73-.24 3 .5C17.2 6.3 18.46 7.5 20 7.5c1.65 0 3-1.35 3-3s-1.35-3-3-3c-1.38 0-2.54.94-2.88 2.22-1.43-.72-2.64-.8-3.6-.25-1.64.94-1.95 3.47-2 4.55-2.33.08-4.45.7-6.1 1.72C4.86 8.98 3.96 8.5 3 8.5c-1.65 0-3 1.35-3 3 0 1.32.84 2.44 2.05 2.84-.03.22-.05.44-.05.66 0 3.86 4.5 7 10 7s10-3.14 10-7c0-.22-.02-.44-.05-.66 1.2-.4 2.05-1.54 2.05-2.84zM2.3 13.37C1.5 13.07 1 12.35 1 11.5c0-1.1.9-2 2-2 .64 0 1.22.32 1.6.82-1.1.85-1.92 1.9-2.3 3.05zm3.7.13c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9.8 4.8c-1.08.63-2.42.96-3.8.96-1.4 0-2.74-.34-3.8-.95-.24-.13-.32-.44-.2-.68.15-.24.46-.32.7-.18 1.83 1.06 4.76 1.06 6.6 0 .23-.13.53-.05.67.2.14.23.06.54-.18.67zm.2-2.8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm5.7-2.13c-.38-1.16-1.2-2.2-2.3-3.05.38-.5.97-.82 1.6-.82 1.1 0 2 .9 2 2 0 .84-.53 1.57-1.3 1.87z" />
+        </svg>
+      </span>
+    </a>
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+
+
+  
+  
+</div>
+
+            </div>
+          </div>
+          
+          
+        </article>
+      </div>
+
+      
+      
+      
+      
+    </div>
+  </section>
+
+    </main>
+
+    
+    <footer class="bg-light dark:bg-darkmode-light">
+  <div class="container">
+    <div class="row items-center py-10">
+      <div class="lg:col-3 mb-8 text-center lg:mb-0 lg:text-left">
+        
+        <a
+          class="navbar-brand inline-block"
+          href="/">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  Shreyas Mishra
+
+
+        </a>
+      </div>
+      <div class="lg:col-6 mb-8 text-center lg:mb-0">
+        <ul>
+          
+        </ul>
+      </div>
+      <div class="lg:col-3 mb-8 text-center lg:mb-0 lg:mt-0 lg:text-right">
+        <ul class="social-icons">
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="twitter"
+                rel="nofollow noopener"
+                href="https://x.com/Shreyas_Mishra1/">
+                <i class="fab fa-twitter"></i>
+              </a>
+            </li>
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="github"
+                rel="nofollow noopener"
+                href="http://github.com/Shreyas220">
+                <i class="fab fa-github"></i>
+              </a>
+            </li>
+          
+            <li>
+              <a
+                target="_blank"
+                aria-label="linkedin"
+                rel="nofollow noopener"
+                href="https://www.linkedin.com/in/shreyasmishra1/">
+                <i class="fab fa-linkedin"></i>
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="border-border dark:border-darkmode-border border-t py-7">
+    <div
+      class="text-text-light dark:text-darkmode-text-light container text-center">
+      <p>
+        Designed &amp; Developed by <a href="https://zeon.studio"
+
+
+
+
+ target="_blank"
+ 
+
+
+>Zeon Studio</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+
+
+    
+    
+
+
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+  
+    
+      
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+<script
+  crossorigin="anonymous"
+  integrity=""
+  src="/js/script.js"></script>
+
+
+<script
+  defer
+  async
+  crossorigin="anonymous"
+  integrity=""
+  src="/js/script-lazy.js"></script>
+
+
+
+<script>
+  if ('serviceWorker' in navigator){navigator.serviceWorker.register("/service-worker.js");}
+</script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  </body>
+</html>
