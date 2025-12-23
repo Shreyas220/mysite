@@ -3,7 +3,7 @@ title: "May I Have Your ATTENTION ?"
 meta_title: "Learning Attention Mechanism from Scratch"
 description: "Understanding scaled dot-product attention step-by-step with a minimal Rust implementation and GloVe embeddings"
 date: 2025-12-21T05:00:00Z
-image: "/images/cover_attention.png"
+image: "/images/cover_attention1.png"
 categories: ["rust", "machine-learning"]
 author: "Shreyas Mishra"
 tags: ["attention", "transformers", "deep-learning", "rust"]
