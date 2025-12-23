@@ -256,71 +256,10 @@ Query · Key = HIGH (projections learned to align these!)
 
 ---
 
-### How Context Builds Through Layers
-
-A single attention layer can find direct relationships. But understanding "it → cat" in a complex sentence requires multiple layers:
-
-```
-Layer 1: Local relationships
-    "sat" notices "cat" (subject-verb)
-    "tired" notices "was" (verb-adjective)
-
-Layer 2: Clause structure
-    "because" connects the two clauses
-    "it" starts looking for animate nouns
-
-Layer 3: Coreference resolution
-    "it" strongly attends to "cat" (not "mat")
-    Why? "cat" is animate, "mat" can't be "tired"
-
-Layer 4+: Refined understanding
-    "tired" now carries context from "cat"
-    The full meaning is assembled
-```
-
-Each layer refines the representation. By layer 12 (or 96 in large models), the vector for "it" has absorbed information from "cat" through accumulated attention.
-
----
-
-### The Training Signal
-
-How do the projection matrices learn the right relationships?
-
-```
-Training example:
-    Input:  "The cat sat on the mat because it was"
-    Target: "tired"
-
-Model prediction with random weights:
-    P("tired") = 2%
-    P("heavy") = 8%    ← wrong! (mat is heavy, cat is tired)
-
-Loss is high → backpropagate → adjust W_Q, W_K, W_V
-
-After millions of examples:
-    "it" learns to attend to animate nouns when followed by states like "tired"
-    P("tired") = 45%
-```
-
-The model never explicitly learns "pronouns refer to nouns." It learns patterns that achieve low loss on next-word prediction — and those patterns *happen to encode* coreference, grammar, and reasoning.
-
----
-
-### Summary: The Progression
-
-| Stage | What It Does | Example |
-|-------|--------------|---------|
-| **Raw embeddings** | Finds similar words | king ↔ queen |
-| **+ Attention** | Weighs relevance | king focuses on queen, not "the" |
-| **+ Learned projections** | Finds relationships | "it" finds "cat" |
-| **+ Multiple layers** | Builds context | "tired" knows it describes cat via "it" |
-| **+ Scale** | Emergent understanding | Reasoning, instruction-following |
-
-Our POC demonstrates stages 1-2. Real transformers add stages 3-5 through training on massive data.
-
----
-
 ## Running the Code
+
+clone the repo
+https://github.com/Shreyas220/llm-playground/tree/main/attention-playground
 
 ### Download GloVe Embeddings
 
